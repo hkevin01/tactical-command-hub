@@ -1,0 +1,141 @@
+{
+  "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "/usr/lib/jvm/java-17-openjdk-amd64"
+    }
+  ],
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.imports.gradle.enabled": false,
+  "java.maven.downloadSources": true,
+  "java.saveActions.organizeImports": true,
+  "java.format.settings.url": ".vscode/eclipse-java-google-style.xml",
+  "java.format.enabled": true,
+  "java.format.onType.enabled": true,
+  "java.codeGeneration.hashCodeEquals.useJava7Objects": true,
+  "java.codeGeneration.generateComments": true,
+  "java.codeGeneration.useBlocks": true,
+  "java.completion.favoriteStaticMembers": [
+    "org.junit.jupiter.api.Assertions.*",
+    "org.mockito.Mockito.*",
+    "org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*",
+    "org.springframework.test.web.servlet.result.MockMvcResultMatchers.*"
+  ],
+  "java.test.defaultConfig": "junit-jupiter",
+  "java.debug.logLevel": "warn",
+  "java.inlayHints.parameterNames.enabled": "literals",
+  "java.references.includeDecompiledSources": false,
+  "java.signatureHelp.enabled": true,
+  "java.sources.organizeImports.starThreshold": 5,
+  "java.sources.organizeImports.staticStarThreshold": 3,
+  "spring-boot.ls.problem.application-properties.ignore": false,
+  "spring-boot.ls.problem.application-yaml.ignore": false,
+  "files.associations": {
+    "*.properties": "spring-boot-properties",
+    "*.yml": "spring-boot-properties-yaml",
+    "*.yaml": "spring-boot-properties-yaml"
+  },
+  "files.exclude": {
+    "**/target": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "search.exclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/.git": true
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.iconTheme": "vs-seti",
+  "problems.decorations.enabled": true,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "extensions.ignoreRecommendations": false,
+  "maven.terminal.useJavaHome": true,
+  "maven.executable.path": "/usr/bin/mvn",
+  "maven.pomfile.autoUpdateEffectivePOM": true,
+  "redhat.telemetry.enabled": false,
+  "sonarlint.rules": {
+    "java:S1192": {
+      "level": "off"
+    },
+    "java:S106": {
+      "level": "info"
+    }
+  },
+  "checkstyle.configuration": "${workspaceFolder}/.vscode/checkstyle.xml",
+  "checkstyle.properties": {},
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "package.json"
+      ],
+      "url": "https://json.schemastore.org/package.json"
+    },
+    {
+      "fileMatch": [
+        "docker-compose*.yml",
+        "docker-compose*.yaml"
+      ],
+      "url": "https://json.schemastore.org/docker-compose.json"
+    }
+  ],
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml",
+    "https://json.schemastore.org/docker-compose.json": "docker-compose*.yml"
+  },
+  "todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])",
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "[ ]",
+    "[x]"
+  ],
+  "todo-tree.highlights.defaultHighlight": {
+    "icon": "alert",
+    "type": "tag",
+    "foreground": "#ffffff",
+    "background": "#ffbd2a",
+    "opacity": 50,
+    "iconColour": "#ffbd2a"
+  },
+  "todo-tree.highlights.customHighlight": {
+    "TODO": {
+      "icon": "check",
+      "foreground": "#000000",
+      "background": "#ffbd2a"
+    },
+    "FIXME": {
+      "icon": "bug",
+      "foreground": "#ffffff",
+      "background": "#f06292"
+    },
+    "BUG": {
+      "icon": "bug",
+      "foreground": "#ffffff", 
+      "background": "#e53e3e"
+    }
+  },
+  "chat.tools.autoApprove": true,
+  "chat.agent.maxRequests": 100
+}

@@ -1,0 +1,54 @@
+# GitHub Copilot configuration for tactical-command-hub
+
+# Coding standards and preferences
+coding_standards:
+  language: java
+  style_guide: google
+  max_line_length: 120
+  indent_size: 4
+
+# Project-specific context
+project_context:
+  domain: military_command_control
+  architecture: spring_boot_microservices
+  security_level: high
+  patterns:
+    - repository
+    - service_layer
+    - dto
+    - builder
+
+# Preferred libraries and frameworks
+dependencies:
+  - spring-boot
+  - spring-security
+  - spring-data-jpa
+  - junit5
+  - mockito
+  - testcontainers
+
+# Code generation preferences
+code_generation:
+  generate_tests: true
+  include_javadoc: true
+  use_lombok: false
+  validation_annotations: true
+
+# Security considerations
+security:
+  data_classification: confidential
+  encryption_required: true
+  audit_logging: enabled
+  access_control: rbac
+
+# Performance requirements
+performance:
+  response_time_target: 200ms
+  concurrent_users: 1000
+  availability: 99.9%
+
+# Documentation standards
+documentation:
+  api_documentation: openapi
+  code_comments: javadoc
+  architecture_decisions: adr
