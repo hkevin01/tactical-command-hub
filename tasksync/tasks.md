@@ -1,2 +1,2 @@
 # Task
-update plan_part2.md with what has been implmented
+for images and icons and assets just generate them create simple ones
