@@ -1,0 +1,93 @@
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:keystore/tactical-command-hub.p12
+    key-store-password: ${SSL_KEYSTORE_PASSWORD:tacticalcommand2024}
+    key-store-type: PKCS12
+    key-alias: tactical-command-hub
+    key-password: ${SSL_KEY_PASSWORD:tacticalcommand2024}
+    protocol: TLS
+    enabled-protocols: TLSv1.2,TLSv1.3
+    ciphers:
+      - TLS_AES_256_GCM_SHA384
+      - TLS_AES_128_GCM_SHA256
+      - TLS_CHACHA20_POLY1305_SHA256
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    client-auth: none
+
+# HTTP to HTTPS redirect configuration
+management:
+  server:
+    port: 8444
+    ssl:
+      enabled: true
+
+# Security configuration for HTTPS
+security:
+  require-ssl: true
+  headers:
+    frame-options: DENY
+    content-type-options: nosniff
+    xss-protection: 1; mode=block
+    referrer-policy: strict-origin-when-cross-origin
+    content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+
+# Logging for security events
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.tacticalcommand.tactical.security: DEBUG
+    root: INFO
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/tactical-command-hub-security.log
+    max-size: 100MB
+    max-history: 30
+
+# Database connection with SSL
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tactical_command_hub?sslmode=require&sslcert=classpath:ssl/client-cert.pem&sslkey=classpath:ssl/client-key.pem&sslrootcert=classpath:ssl/ca-cert.pem
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+
+# FIPS 140-2 compliance settings
+fips:
+  enabled: ${FIPS_ENABLED:false}
+  provider: BC-FIPS
+  keystore:
+    type: BCFKS
+    algorithm: PBKDF2WithHmacSHA256
+
+# Audit logging configuration
+audit:
+  enabled: true
+  log-file: logs/tactical-command-hub-audit.log
+  retention-days: 2557 # 7 years retention
+  events:
+    authentication: true
+    authorization: true
+    data-access: true
+    configuration-changes: true
+    security-events: true
+
+# Additional security headers
+http:
+  security:
+    headers:
+      strict-transport-security: max-age=31536000; includeSubDomains; preload
+      x-frame-options: DENY
+      x-content-type-options: nosniff
+      x-xss-protection: 1; mode=block
+      cache-control: no-cache, no-store, must-revalidate
+      pragma: no-cache
+      expires: 0
