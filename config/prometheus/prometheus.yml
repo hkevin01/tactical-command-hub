@@ -1,0 +1,126 @@
+# Prometheus Configuration for Tactical Command Hub
+# Monitoring and metrics collection for the tactical command system
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: "tactical-command-hub"
+    environment: "production"
+
+# Rule files for alerting
+rule_files:
+  - "alert_rules.yml"
+
+# Scrape configuration
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Tactical Command Hub Application
+  - job_name: "tactical-command-hub"
+    static_configs:
+      - targets: ["tactical-app:8081"]
+    metrics_path: /actuator/prometheus
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ["prometheus"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: tactical-app:8081
+
+  # Database monitoring (PostgreSQL)
+  - job_name: "postgresql"
+    static_configs:
+      - targets: ["postgresql:5432"]
+    metrics_path: /metrics
+    scrape_interval: 30s
+    params:
+      # PostgreSQL exporter parameters
+      collect[]:
+        - "postgres"
+        - "replication"
+        - "locks"
+        - "stat_database"
+
+  # Redis monitoring
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis:6379"]
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # NGINX monitoring
+  - job_name: "nginx"
+    static_configs:
+      - targets: ["nginx:80"]
+    metrics_path: /nginx_status
+    scrape_interval: 30s
+
+  # JVM metrics from Spring Boot Actuator
+  - job_name: "jvm-metrics"
+    static_configs:
+      - targets: ["tactical-app:8081"]
+    metrics_path: /actuator/prometheus
+    scrape_interval: 15s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "jvm_.*"
+        target_label: component
+        replacement: "jvm"
+
+  # Application-specific metrics
+  - job_name: "tactical-metrics"
+    static_configs:
+      - targets: ["tactical-app:8081"]
+    metrics_path: /actuator/prometheus
+    scrape_interval: 10s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "tactical_.*"
+        target_label: component
+        replacement: "tactical"
+
+  # System metrics (Node Exporter)
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+    scrape_interval: 30s
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: "(.*):(.*)"
+        target_label: instance
+        replacement: "${1}"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+      scheme: http
+      timeout: 10s
+      api_version: v1
+# Remote write configuration for long-term storage
+# remote_write:
+#   - url: "https://your-prometheus-remote-storage/api/v1/write"
+#     basic_auth:
+#       username: tactical-hub
+#       password: your-password
+
+# Remote read configuration
+# remote_read:
+#   - url: "https://your-prometheus-remote-storage/api/v1/read"
+#     basic_auth:
+#       username: tactical-hub
+#       password: your-password

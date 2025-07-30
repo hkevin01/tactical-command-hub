@@ -1,2 +1,2 @@
 # Task
-for images and icons and assets just generate them create simple ones
+the root readme.md the CI/CD pipeline badge is broken
