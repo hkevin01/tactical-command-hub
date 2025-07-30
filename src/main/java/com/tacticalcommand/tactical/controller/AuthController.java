@@ -1,15 +1,8 @@
-package com.caribouthunder.tactical.controller;
+package com.tacticalcommand.tactical.controller;
 
-import com.caribouthunder.tactical.domain.User;
-import com.caribouthunder.tactical.dto.auth.LoginRequest;
-import com.caribouthunder.tactical.dto.auth.LoginResponse;
-import com.caribouthunder.tactical.repository.UserRepository;
-import com.caribouthunder.tactical.security.JwtTokenProvider;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +11,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.tacticalcommand.tactical.domain.User;
+import com.tacticalcommand.tactical.dto.auth.LoginRequest;
+import com.tacticalcommand.tactical.dto.auth.LoginResponse;
+import com.tacticalcommand.tactical.repository.UserRepository;
+import com.tacticalcommand.tactical.security.JwtTokenProvider;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 /**
  * Authentication Controller for handling user login and token management.

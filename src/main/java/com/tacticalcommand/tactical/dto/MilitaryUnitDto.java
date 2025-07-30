@@ -1,12 +1,9 @@
-package com.caribouthunder.tactical.dto;
-
-import com.caribouthunder.tactical.domain.MilitaryUnit;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+package com.tacticalcommand.tactical.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.tacticalcommand.tactical.domain.MilitaryUnit;
 
 /**
  * Data Transfer Object for MilitaryUnit response data.

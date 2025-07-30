@@ -1,7 +1,8 @@
-package com.caribouthunder.tactical.security;
+package com.tacticalcommand.tactical.security;
 
-import com.caribouthunder.tactical.domain.User;
-import com.caribouthunder.tactical.repository.UserRepository;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,8 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import com.tacticalcommand.tactical.domain.User;
+import com.tacticalcommand.tactical.repository.UserRepository;
 
 /**
  * Custom UserDetailsService implementation for Spring Security authentication.

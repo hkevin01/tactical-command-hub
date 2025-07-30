@@ -1,4 +1,4 @@
-package com.caribouthunder.tactical.service;
+package com.tacticalcommand.tactical.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,8 +22,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.caribouthunder.tactical.domain.MilitaryUnit;
-import com.caribouthunder.tactical.repository.MilitaryUnitRepository;
+import com.tacticalcommand.tactical.domain.MilitaryUnit;
+import com.tacticalcommand.tactical.repository.MilitaryUnitRepository;
+import com.tacticalcommand.tactical.service.MilitaryUnitService;
 
 /**
  * Unit tests for MilitaryUnitService.

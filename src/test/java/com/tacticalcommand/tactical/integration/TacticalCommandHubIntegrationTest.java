@@ -1,4 +1,4 @@
-package com.caribouthunder.tactical.integration;
+package com.tacticalcommand.tactical.integration;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,11 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.caribouthunder.tactical.TacticalCommandHubApplication;
-import com.caribouthunder.tactical.domain.MilitaryUnit;
-import com.caribouthunder.tactical.dto.auth.LoginRequest;
-import com.caribouthunder.tactical.dto.auth.LoginResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tacticalcommand.tactical.TacticalCommandHubApplication;
+import com.tacticalcommand.tactical.domain.MilitaryUnit;
+import com.tacticalcommand.tactical.dto.auth.LoginRequest;
+import com.tacticalcommand.tactical.dto.auth.LoginResponse;
 
 /**
  * Integration tests for Tactical Command Hub REST API.

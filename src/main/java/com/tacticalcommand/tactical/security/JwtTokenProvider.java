@@ -1,15 +1,17 @@
-package com.caribouthunder.tactical.security;
+package com.tacticalcommand.tactical.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 
 /**
  * JWT Token Provider for generating and validating JSON Web Tokens.

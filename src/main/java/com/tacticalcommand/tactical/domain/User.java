@@ -1,12 +1,12 @@
-package com.caribouthunder.tactical.domain;
+package com.tacticalcommand.tactical.domain;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * User entity representing system users with authentication and authorization data.

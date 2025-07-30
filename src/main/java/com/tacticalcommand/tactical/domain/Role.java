@@ -1,11 +1,10 @@
-package com.caribouthunder.tactical.domain;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+package com.tacticalcommand.tactical.domain;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 /**
  * Role entity representing user roles for authorization in the tactical command system.

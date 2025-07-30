@@ -1,4 +1,4 @@
-package com.caribouthunder.tactical.dto.auth;
+package com.tacticalcommand.tactical.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 
