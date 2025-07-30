@@ -1,7 +1,7 @@
 # Tactical Command Hub
 
-[![CI/CD Pipeline](https://github.com/your-org/tactical-command-hub/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/your-org/tactical-command-hub/actions)
-[![codecov](https://codecov.io/gh/your-org/tactical-command-hub/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/tactical-command-hub)
+[![CI/CD Pipeline](https://github.com/hkevin01/tactical-command-hub/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/hkevin01/tactical-command-hub/actions)
+[![codecov](https://codecov.io/gh/hkevin01/tactical-command-hub/branch/main/graph/badge.svg)](https://codecov.io/gh/hkevin01/tactical-command-hub)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A **Java-based Command and Control System Simulator** designed to replicate the functionality of military joint operations platforms like GCCS-J (Global Command and Control System - Joint). This enterprise-level application demonstrates defense contracting software development practices, incorporating real-time tactical unit management, mission planning, multi-domain coordination, and comprehensive security features.
