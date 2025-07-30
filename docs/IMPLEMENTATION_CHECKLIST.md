@@ -4,20 +4,20 @@
 
 ### Directory Structure Organization
 - [x] **Core Project Structure**: Maven-based Java project with proper package organization
-- [x] **Source Code Organization**: `src/main/java` with proper package structure (`com.caribouthunder.tactical`)
+- [x] **Source Code Organization**: `src/main/java` with proper package structure (`com.tacticalcommand.tactical`)
 - [x] **Test Organization**: `src/test/java` with matching package structure
 - [x] **Resources Organization**: `src/main/resources` and `src/test/resources`
 - [x] **Documentation Structure**: `docs/` folder with project documentation
 - [x] **Configuration Files**: Proper placement of config files in root directory
 
 ### Subdirectory Structure
-- [x] **Controller Layer**: `src/main/java/com/caribouthunder/tactical/controller/`
-- [x] **Service Layer**: `src/main/java/com/caribouthunder/tactical/service/`
-- [x] **Repository Layer**: `src/main/java/com/caribouthunder/tactical/repository/`
-- [x] **Domain Models**: `src/main/java/com/caribouthunder/tactical/domain/`
-- [x] **DTOs**: `src/main/java/com/caribouthunder/tactical/dto/`
-- [x] **Security**: `src/main/java/com/caribouthunder/tactical/security/`
-- [x] **Configuration**: `src/main/java/com/caribouthunder/tactical/config/`
+- [x] **Controller Layer**: `src/main/java/com/tacticalcommand/tactical/controller/`
+- [x] **Service Layer**: `src/main/java/com/tacticalcommand/tactical/service/`
+- [x] **Repository Layer**: `src/main/java/com/tacticalcommand/tactical/repository/`
+- [x] **Domain Models**: `src/main/java/com/tacticalcommand/tactical/domain/`
+- [x] **DTOs**: `src/main/java/com/tacticalcommand/tactical/dto/`
+- [x] **Security**: `src/main/java/com/tacticalcommand/tactical/security/`
+- [x] **Configuration**: `src/main/java/com/tacticalcommand/tactical/config/`
 
 ### Additional Required Directories
 - [x] **Scripts Directory**: `scripts/` for build, test, and deployment scripts

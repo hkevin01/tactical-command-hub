@@ -23,7 +23,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 
 # Add metadata
-LABEL maintainer="tactical-command-hub@caribouthunder.com"
+LABEL maintainer="tactical-command-hub@tacticalcommand.com"
 LABEL version="1.0.0"
 LABEL description="Tactical Command Hub - Military C2 System Simulator"
 

@@ -332,7 +332,7 @@ Fixes #345
 
 ### Communication Channels
 - **Slack**: #tactical-command-dev for daily communication
-- **Email**: official-announcements@caribouthunder.com for announcements
+- **Email**: official-announcements@tacticalcommand.com for announcements
 - **GitHub**: All technical discussions in issues/PRs
 
 ---
@@ -343,7 +343,7 @@ Fixes #345
 
 1. **Repository Setup**
    ```bash
-   git clone https://github.com/caribouthunder/tactical-command-hub.git
+   git clone https://github.com/tacticalcommand/tactical-command-hub.git
    cd tactical-command-hub
    ./scripts/setup.sh
    ```
@@ -380,10 +380,10 @@ docker build -t tactical-command-hub .
 ```
 
 #### Useful Links
-- [Project Board](https://github.com/caribouthunder/tactical-command-hub/projects)
+- [Project Board](https://github.com/tacticalcommand/tactical-command-hub/projects)
 - [API Documentation](https://tactical-command.mil/swagger-ui.html)
-- [Deployment Dashboard](https://jenkins.caribouthunder.com/tactical-command)
-- [Monitoring Dashboard](https://grafana.caribouthunder.com/tactical-command)
+- [Deployment Dashboard](https://jenkins.tacticalcommand.com/tactical-command)
+- [Monitoring Dashboard](https://grafana.tacticalcommand.com/tactical-command)
 
 ---
 

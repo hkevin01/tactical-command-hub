@@ -56,7 +56,7 @@ This document provides a comprehensive verification checklist for all components
 ## 3. Project Structure Implementation (from plan.md & plan_part2.md)
 
 ### 3.1 Directory Structure
-- [ ] **src/main/java/com/caribouthunder/tactical/** - Main application code
+- [ ] **src/main/java/com/tacticalcommand/tactical/** - Main application code
   - [ ] **config/** - Spring configurations
   - [ ] **controller/** - REST API controllers
   - [ ] **service/** - Business logic layer
@@ -162,7 +162,7 @@ This document provides a comprehensive verification checklist for all components
   - [ ] `.github/` with workflows, templates, and policies
   - [ ] `.copilot/` with copilot.yml and prompts directory
   - [ ] `.vscode/` with complete IDE configuration
-  - [ ] `src/main/java/com/caribouthunder/tactical/` package structure
+  - [ ] `src/main/java/com/tacticalcommand/tactical/` package structure
   - [ ] `src/main/resources/` with application configurations
   - [ ] `src/test/` with comprehensive test structure
   - [ ] `docs/` with project documentation

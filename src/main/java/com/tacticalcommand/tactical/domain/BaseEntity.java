@@ -1,12 +1,13 @@
-package com.caribouthunder.tactical.domain;
+package com.tacticalcommand.tactical.domain;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import jakarta.persistence.*;
 
 /**
  * Base entity class providing common audit fields for all domain entities.
