@@ -1,0 +1,59 @@
+# Development environment with all services
+version: '3.8'
+
+services:
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: tactical-postgres-dev
+    environment:
+      POSTGRES_DB: tactical_command_hub_dev
+      POSTGRES_USER: tactical_dev
+      POSTGRES_PASSWORD: dev_password_123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - tactical-dev-network
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: tactical-redis-dev  
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - tactical-dev-network
+    command: redis-server --appendonly yes
+
+  app-dev:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: tactical-app-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: development
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-dev:5432/tactical_command_hub_dev
+      SPRING_DATASOURCE_USERNAME: tactical_dev
+      SPRING_DATASOURCE_PASSWORD: dev_password_123
+      SPRING_REDIS_HOST: redis-dev
+      SPRING_REDIS_PORT: 6379
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres-dev
+      - redis-dev
+    networks:
+      - tactical-dev-network
+    volumes:
+      - ../logs:/app/logs
+
+networks:
+  tactical-dev-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:

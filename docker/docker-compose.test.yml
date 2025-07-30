@@ -1,0 +1,33 @@
+# Testing environment with test database
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: tactical-postgres-test
+    environment:
+      POSTGRES_DB: tactical_command_hub_test
+      POSTGRES_USER: tactical_test
+      POSTGRES_PASSWORD: test_password_123
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - tactical-test-network
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: tactical-redis-test
+    ports:
+      - "6381:6379"
+    networks:
+      - tactical-test-network
+    tmpfs:
+      - /data
+
+networks:
+  tactical-test-network:
+    driver: bridge

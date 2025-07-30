@@ -1,0 +1,33 @@
+# Code Owners for Tactical Command Hub
+
+# Global owners
+* @hkevin01
+
+# Core application code
+/src/main/java/com/tacticalcommand/tactical/ @hkevin01
+/src/main/java/com/tacticalcommand/tactical/config/ @hkevin01
+/src/main/java/com/tacticalcommand/tactical/security/ @hkevin01
+
+# Database and migrations
+/src/main/resources/db/migration/ @hkevin01
+/src/main/resources/application.yml @hkevin01
+
+# Infrastructure and deployment
+/docker/ @hkevin01
+/scripts/ @hkevin01
+/Dockerfile @hkevin01
+/docker-compose.yml @hkevin01
+
+# CI/CD pipeline
+/.github/workflows/ @hkevin01
+
+# Documentation
+/docs/ @hkevin01
+/README.md @hkevin01
+
+# Tests
+/src/test/ @hkevin01
+
+# Configuration files
+/.vscode/ @hkevin01
+/pom.xml @hkevin01

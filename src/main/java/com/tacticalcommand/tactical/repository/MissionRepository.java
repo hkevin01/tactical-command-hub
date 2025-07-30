@@ -259,4 +259,13 @@ public interface MissionRepository
    */
   @Query("SELECT m FROM Mission m ORDER BY m.createdAt DESC")
   Page<Mission> findRecentMissions(Pageable pageable);
+
+  /**
+   * Finds missions by assigned unit and status list.
+   *
+   * @param assignedUnit the military unit
+   * @param statuses list of mission statuses
+   * @return list of missions matching the criteria
+   */
+  List<Mission> findByAssignedUnitAndStatusIn(MilitaryUnit assignedUnit, List<Mission.MissionStatus> statuses);
 }
