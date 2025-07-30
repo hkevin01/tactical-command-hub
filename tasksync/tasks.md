@@ -1,2 +1,2 @@
 # Task
-start implmenting the not found parts of plan_part2.md
+update plan_part2.md with what has been implmented

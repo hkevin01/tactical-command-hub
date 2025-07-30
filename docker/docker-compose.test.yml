@@ -1,5 +1,5 @@
 # Testing environment with test database
-version: '3.8'
+version: "3.8"
 
 services:
   postgres-test:

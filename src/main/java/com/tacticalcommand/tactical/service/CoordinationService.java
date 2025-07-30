@@ -1,21 +1,24 @@
 package com.tacticalcommand.tactical.service;
 
-import com.tacticalcommand.tactical.domain.Mission;
-import com.tacticalcommand.tactical.domain.Mission.MissionStatus;
-import com.tacticalcommand.tactical.domain.MilitaryUnit;
-import com.tacticalcommand.tactical.domain.MilitaryUnit.UnitStatus;
-import com.tacticalcommand.tactical.repository.MissionRepository;
-import com.tacticalcommand.tactical.repository.MilitaryUnitRepository;
-import com.tacticalcommand.tactical.util.GeospatialUtils;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.tacticalcommand.tactical.domain.MilitaryUnit;
+import com.tacticalcommand.tactical.domain.MilitaryUnit.UnitStatus;
+import com.tacticalcommand.tactical.domain.Mission;
+import com.tacticalcommand.tactical.domain.Mission.MissionStatus;
+import com.tacticalcommand.tactical.repository.MilitaryUnitRepository;
+import com.tacticalcommand.tactical.repository.MissionRepository;
+import com.tacticalcommand.tactical.util.GeospatialUtils;
 
 /**
  * Service class for coordinating multi-unit military operations.

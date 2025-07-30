@@ -1,11 +1,7 @@
 package com.tacticalcommand.tactical.controller;
 
-import com.tacticalcommand.tactical.domain.Mission;
-import com.tacticalcommand.tactical.domain.Mission.MissionStatus;
-import com.tacticalcommand.tactical.domain.Mission.Priority;
-import com.tacticalcommand.tactical.domain.MissionWaypoint;
-import com.tacticalcommand.tactical.domain.MissionReport;
-import com.tacticalcommand.tactical.service.MissionService;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,8 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import com.tacticalcommand.tactical.domain.Mission;
+import com.tacticalcommand.tactical.domain.Mission.MissionStatus;
+import com.tacticalcommand.tactical.domain.Mission.Priority;
+import com.tacticalcommand.tactical.domain.MissionReport;
+import com.tacticalcommand.tactical.domain.MissionWaypoint;
+import com.tacticalcommand.tactical.service.MissionService;
 
 /**
  * REST controller for mission management operations.

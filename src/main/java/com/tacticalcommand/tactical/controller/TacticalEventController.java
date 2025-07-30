@@ -1,8 +1,8 @@
 package com.tacticalcommand.tactical.controller;
 
-import com.tacticalcommand.tactical.domain.TacticalEvent;
-import com.tacticalcommand.tactical.service.TacticalEventService;
-import com.tacticalcommand.tactical.service.TacticalEventService.EventStats;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,9 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import com.tacticalcommand.tactical.domain.TacticalEvent;
+import com.tacticalcommand.tactical.service.TacticalEventService;
 
 /**
  * REST controller for tactical event management.
@@ -119,12 +118,11 @@ public class TacticalEventController {
      * Gets events by mission.
      *
      * @param missionId the mission ID
-     * @param pageable pagination parameters
      * @return events for the mission
      */
     @GetMapping("/mission/{missionId}")
-    public ResponseEntity<Page<TacticalEvent>> getEventsByMission(@PathVariable Long missionId, Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getEventsByMission(missionId, pageable);
+    public ResponseEntity<List<TacticalEvent>> getEventsByMission(@PathVariable Long missionId) {
+        List<TacticalEvent> events = eventService.getEventsByMission(missionId);
         return ResponseEntity.ok(events);
     }
 
@@ -132,25 +130,24 @@ public class TacticalEventController {
      * Gets events by unit.
      *
      * @param unitId the unit ID
-     * @param pageable pagination parameters
      * @return events for the unit
      */
     @GetMapping("/unit/{unitId}")
-    public ResponseEntity<Page<TacticalEvent>> getEventsByUnit(@PathVariable Long unitId, Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getEventsByUnit(unitId, pageable);
+    public ResponseEntity<List<TacticalEvent>> getEventsByUnit(@PathVariable Long unitId) {
+        List<TacticalEvent> events = eventService.getEventsByUnit(unitId);
         return ResponseEntity.ok(events);
     }
 
     /**
      * Gets events by severity.
      *
-     * @param severity the event severity
+     * @param severity the event severity (LOW, MEDIUM, HIGH, CRITICAL)
      * @param pageable pagination parameters
      * @return events with specified severity
      */
     @GetMapping("/severity/{severity}")
     public ResponseEntity<Page<TacticalEvent>> getEventsBySeverity(
-            @PathVariable TacticalEvent.EventSeverity severity,
+            @PathVariable String severity,
             Pageable pageable) {
         Page<TacticalEvent> events = eventService.getEventsBySeverity(severity, pageable);
         return ResponseEntity.ok(events);
@@ -170,176 +167,29 @@ public class TacticalEventController {
     }
 
     /**
-     * Gets events by status.
-     *
-     * @param status the event status
-     * @param pageable pagination parameters
-     * @return events with specified status
-     */
-    @GetMapping("/status/{status}")
-    public ResponseEntity<Page<TacticalEvent>> getEventsByStatus(
-            @PathVariable TacticalEvent.EventStatus status,
-            Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getEventsByStatus(status, pageable);
-        return ResponseEntity.ok(events);
-    }
-
-    /**
      * Gets events within time range.
      *
      * @param startTime start time
      * @param endTime end time
-     * @param pageable pagination parameters
      * @return events within time range
      */
     @GetMapping("/time-range")
-    public ResponseEntity<Page<TacticalEvent>> getEventsInTimeRange(
+    public ResponseEntity<List<TacticalEvent>> getEventsInTimeRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
-            Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getEventsInTimeRange(startTime, endTime, pageable);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+        List<TacticalEvent> events = eventService.getEventsByTimeRange(startTime, endTime);
         return ResponseEntity.ok(events);
     }
 
     /**
      * Gets critical events.
      *
-     * @param pageable pagination parameters
      * @return critical events
      */
     @GetMapping("/critical")
-    public ResponseEntity<Page<TacticalEvent>> getCriticalEvents(Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getCriticalEvents(pageable);
+    public ResponseEntity<List<TacticalEvent>> getCriticalEvents() {
+        List<TacticalEvent> events = eventService.getCriticalEvents();
         return ResponseEntity.ok(events);
-    }
-
-    /**
-     * Gets unacknowledged events.
-     *
-     * @param pageable pagination parameters
-     * @return unacknowledged events
-     */
-    @GetMapping("/unacknowledged")
-    public ResponseEntity<Page<TacticalEvent>> getUnacknowledgedEvents(Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getUnacknowledgedEvents(pageable);
-        return ResponseEntity.ok(events);
-    }
-
-    /**
-     * Gets unresolved events.
-     *
-     * @param pageable pagination parameters
-     * @return unresolved events
-     */
-    @GetMapping("/unresolved")
-    public ResponseEntity<Page<TacticalEvent>> getUnresolvedEvents(Pageable pageable) {
-        Page<TacticalEvent> events = eventService.getUnresolvedEvents(pageable);
-        return ResponseEntity.ok(events);
-    }
-
-    /**
-     * Acknowledges an event.
-     *
-     * @param id the event ID
-     * @param acknowledgedBy who acknowledged the event
-     * @param notes optional acknowledgment notes
-     * @return updated event
-     */
-    @PostMapping("/{id}/acknowledge")
-    public ResponseEntity<TacticalEvent> acknowledgeEvent(
-            @PathVariable Long id,
-            @RequestParam String acknowledgedBy,
-            @RequestParam(required = false) String notes) {
-        try {
-            TacticalEvent event = eventService.acknowledgeEvent(id, acknowledgedBy, notes);
-            return ResponseEntity.ok(event);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    /**
-     * Resolves an event.
-     *
-     * @param id the event ID
-     * @param resolvedBy who resolved the event
-     * @param resolution the resolution description
-     * @return updated event
-     */
-    @PostMapping("/{id}/resolve")
-    public ResponseEntity<TacticalEvent> resolveEvent(
-            @PathVariable Long id,
-            @RequestParam String resolvedBy,
-            @RequestParam String resolution) {
-        try {
-            TacticalEvent event = eventService.resolveEvent(id, resolvedBy, resolution);
-            return ResponseEntity.ok(event);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    /**
-     * Updates event location.
-     *
-     * @param id the event ID
-     * @param latitude the latitude
-     * @param longitude the longitude
-     * @return updated event
-     */
-    @PostMapping("/{id}/location")
-    public ResponseEntity<TacticalEvent> updateEventLocation(
-            @PathVariable Long id,
-            @RequestParam Double latitude,
-            @RequestParam Double longitude) {
-        try {
-            TacticalEvent event = eventService.updateEventLocation(id, latitude, longitude);
-            return ResponseEntity.ok(event);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    /**
-     * Escalates an event.
-     *
-     * @param id the event ID
-     * @param newSeverity the new severity level
-     * @param escalatedBy who escalated the event
-     * @param reason escalation reason
-     * @return updated event
-     */
-    @PostMapping("/{id}/escalate")
-    public ResponseEntity<TacticalEvent> escalateEvent(
-            @PathVariable Long id,
-            @RequestParam TacticalEvent.EventSeverity newSeverity,
-            @RequestParam String escalatedBy,
-            @RequestParam String reason) {
-        try {
-            TacticalEvent event = eventService.escalateEvent(id, newSeverity, escalatedBy, reason);
-            return ResponseEntity.ok(event);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    /**
-     * Gets event statistics.
-     *
-     * @return event statistics
-     */
-    @GetMapping("/statistics")
-    public ResponseEntity<EventStats> getEventStatistics() {
-        EventStats stats = eventService.getEventStatistics();
-        return ResponseEntity.ok(stats);
     }
 
     /**
@@ -355,14 +205,64 @@ public class TacticalEventController {
     }
 
     /**
-     * Gets events requiring attention.
+     * Updates an event.
      *
-     * @return events that need attention
+     * @param id the event ID
+     * @param event the updated event data
+     * @return updated event
      */
-    @GetMapping("/attention-required")
-    public ResponseEntity<List<TacticalEvent>> getEventsRequiringAttention() {
-        List<TacticalEvent> events = eventService.getEventsRequiringAttention();
-        return ResponseEntity.ok(events);
+    @PutMapping("/{id}")
+    public ResponseEntity<TacticalEvent> updateEvent(@PathVariable Long id, @RequestBody TacticalEvent event) {
+        try {
+            TacticalEvent updatedEvent = eventService.updateEvent(id, event);
+            return ResponseEntity.ok(updatedEvent);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /**
+     * Acknowledges an event.
+     *
+     * @param id the event ID
+     * @param acknowledgedBy who acknowledged the event
+     * @return updated event
+     */
+    @PostMapping("/{id}/acknowledge")
+    public ResponseEntity<TacticalEvent> acknowledgeEvent(
+            @PathVariable Long id,
+            @RequestParam String acknowledgedBy) {
+        try {
+            TacticalEvent event = eventService.acknowledgeEvent(id, acknowledgedBy);
+            return ResponseEntity.ok(event);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /**
+     * Resolves an event.
+     *
+     * @param id the event ID
+     * @param resolution the resolution description
+     * @return updated event
+     */
+    @PostMapping("/{id}/resolve")
+    public ResponseEntity<TacticalEvent> resolveEvent(
+            @PathVariable Long id,
+            @RequestParam String resolution) {
+        try {
+            TacticalEvent event = eventService.resolveEvent(id, resolution);
+            return ResponseEntity.ok(event);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**

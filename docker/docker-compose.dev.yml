@@ -1,5 +1,5 @@
 # Development environment with all services
-version: '3.8'
+version: "3.8"
 
 services:
   postgres-dev:
@@ -19,7 +19,7 @@ services:
 
   redis-dev:
     image: redis:7-alpine
-    container_name: tactical-redis-dev  
+    container_name: tactical-redis-dev
     ports:
       - "6380:6379"
     volumes:
