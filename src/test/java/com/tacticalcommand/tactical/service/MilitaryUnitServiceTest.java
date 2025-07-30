@@ -24,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.tacticalcommand.tactical.domain.MilitaryUnit;
 import com.tacticalcommand.tactical.repository.MilitaryUnitRepository;
-import com.tacticalcommand.tactical.service.MilitaryUnitService;
 
 /**
  * Unit tests for MilitaryUnitService.

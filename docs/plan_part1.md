@@ -33,7 +33,6 @@ Optional Enhancements
 Project Structure
 awk
 
-Copy
 tactical-command-hub/
 ├── src/
 │   ├── main/
