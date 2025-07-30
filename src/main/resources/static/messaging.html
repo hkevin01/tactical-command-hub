@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tactical Command Messaging System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .messaging-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            height: 600px;
+        }
+        
+        .connection-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .message-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px 0;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-emergency {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+        
+        .message-display {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            min-height: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .message.emergency {
+            border-left-color: #ff416c;
+            background: rgba(255, 65, 108, 0.2);
+        }
+        
+        .message.classified {
+            border-left-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+        }
+        
+        .message-header {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .message-content {
+            font-size: 14px;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .status.connected {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+        
+        .status.disconnected {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+        
+        .classification-badge {
+            display: inline-block;
+            background: #ffd700;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .timestamp {
+            font-size: 11px;
+            opacity: 0.7;
+            float: right;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Tactical Command Messaging System</h1>
+            <p>Secure Real-Time Communication Platform</p>
+        </div>
+        
+        <div class="messaging-container">
+            <div class="connection-panel">
+                <h3>🔐 Connection Control</h3>
+                <div id="connectionStatus" class="status disconnected">
+                    DISCONNECTED
+                </div>
+                
+                <div class="form-group">
+                    <label for="serverUrl">Server URL:</label>
+                    <input type="text" id="serverUrl" value="http://localhost:8080/ws/messaging" readonly>
+                </div>
+                
+                <button id="connectBtn" class="btn" onclick="connect()">
+                    🔌 Connect to Command Center
+                </button>
+                <button id="disconnectBtn" class="btn" onclick="disconnect()" disabled>
+                    ⚡ Disconnect
+                </button>
+                
+                <hr style="margin: 20px 0; border: 1px solid rgba(255,255,255,0.2);">
+                
+                <h4>📧 Send Message</h4>
+                <div class="form-group">
+                    <label for="messageType">Message Type:</label>
+                    <select id="messageType">
+                        <option value="TEXT">Text Message</option>
+                        <option value="ALERT">Alert</option>
+                        <option value="REPORT">Report</option>
+                        <option value="ORDER">Order</option>
+                        <option value="REQUEST">Request</option>
+                        <option value="STATUS_UPDATE">Status Update</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="classification">Classification:</label>
+                    <select id="classification">
+                        <option value="UNCLASSIFIED">Unclassified</option>
+                        <option value="CONFIDENTIAL">Confidential</option>
+                        <option value="SECRET">Secret</option>
+                        <option value="TOP_SECRET">Top Secret</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" placeholder="Message subject">
+                </div>
+                
+                <div class="form-group">
+                    <label for="messageContent">Content:</label>
+                    <textarea id="messageContent" rows="3" placeholder="Enter your tactical message..."></textarea>
+                </div>
+                
+                <button id="sendBtn" class="btn" onclick="sendMessage()" disabled>
+                    📤 Send Message
+                </button>
+                
+                <hr style="margin: 20px 0; border: 1px solid rgba(255,255,255,0.2);">
+                
+                <h4>🚨 Emergency Alert</h4>
+                <div class="form-group">
+                    <textarea id="emergencyContent" rows="2" placeholder="Emergency alert message..."></textarea>
+                </div>
+                <button id="emergencyBtn" class="btn btn-emergency" onclick="sendEmergencyAlert()" disabled>
+                    🚨 BROADCAST EMERGENCY
+                </button>
+            </div>
+            
+            <div class="message-panel">
+                <h3>💬 Message Stream</h3>
+                <div id="messageDisplay" class="message-display">
+                    <div class="message">
+                        <div class="message-header">
+                            System Message
+                            <span class="timestamp">Ready</span>
+                        </div>
+                        <div class="message-content">
+                            Tactical Command Messaging System initialized. Connect to begin secure communications.
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="typingIndicator" style="font-style: italic; opacity: 0.7; min-height: 20px;">
+                    <!-- Typing indicators will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stompClient = null;
+        let connected = false;
+
+        function connect() {
+            const socket = new SockJS('/ws/messaging');
+            stompClient = Stomp.over(socket);
+            
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                connected = true;
+                updateConnectionStatus(true);
+                
+                // Subscribe to message topics
+                stompClient.subscribe('/topic/messages', function (message) {
+                    showMessage(JSON.parse(message.body));
+                });
+                
+                stompClient.subscribe('/topic/emergency', function (message) {
+                    showMessage(JSON.parse(message.body), true);
+                });
+                
+                // Subscribe to user-specific messages
+                stompClient.subscribe('/user/queue/messages', function (message) {
+                    showMessage(JSON.parse(message.body));
+                });
+                
+                addSystemMessage('Connected to Tactical Command Center');
+            }, function (error) {
+                console.log('Connection error: ' + error);
+                updateConnectionStatus(false);
+                addSystemMessage('Connection failed: ' + error, 'error');
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            connected = false;
+            updateConnectionStatus(false);
+            addSystemMessage('Disconnected from Command Center');
+        }
+
+        function sendMessage() {
+            if (!connected) {
+                alert('Not connected to server');
+                return;
+            }
+            
+            const messageType = document.getElementById('messageType').value;
+            const classification = document.getElementById('classification').value;
+            const subject = document.getElementById('subject').value;
+            const content = document.getElementById('messageContent').value;
+            
+            if (!subject || !content) {
+                alert('Please fill in subject and content');
+                return;
+            }
+            
+            const message = {
+                messageType: messageType,
+                classification: classification,
+                subject: subject,
+                content: content,
+                priorityLevel: 2
+            };
+            
+            stompClient.send('/app/send', {}, JSON.stringify(message));
+            
+            // Clear form
+            document.getElementById('subject').value = '';
+            document.getElementById('messageContent').value = '';
+            
+            addSystemMessage('Message sent', 'success');
+        }
+
+        function sendEmergencyAlert() {
+            if (!connected) {
+                alert('Not connected to server');
+                return;
+            }
+            
+            const content = document.getElementById('emergencyContent').value;
+            if (!content) {
+                alert('Please enter emergency alert content');
+                return;
+            }
+            
+            if (!confirm('Send EMERGENCY ALERT to all units?')) {
+                return;
+            }
+            
+            stompClient.send('/app/emergency', {}, content);
+            
+            // Clear form
+            document.getElementById('emergencyContent').value = '';
+            
+            addSystemMessage('Emergency alert broadcasted', 'success');
+        }
+
+        function showMessage(message, isEmergency = false) {
+            const messageDisplay = document.getElementById('messageDisplay');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            if (isEmergency || message.messageType === 'EMERGENCY_ALERT') {
+                messageDiv.className += ' emergency';
+            } else if (message.classification !== 'UNCLASSIFIED') {
+                messageDiv.className += ' classified';
+            }
+            
+            const timestamp = message.createdAt ? new Date(message.createdAt).toLocaleTimeString() : new Date().toLocaleTimeString();
+            const classificationBadge = message.classification !== 'UNCLASSIFIED' ? 
+                `<span class="classification-badge">${message.classification}</span>` : '';
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <strong>${message.senderName || 'System'}</strong> - ${message.messageType}${classificationBadge}
+                    <span class="timestamp">${timestamp}</span>
+                </div>
+                <div class="message-content">
+                    <strong>${message.subject || ''}</strong><br>
+                    ${message.content}
+                </div>
+            `;
+            
+            messageDisplay.appendChild(messageDiv);
+            messageDisplay.scrollTop = messageDisplay.scrollHeight;
+        }
+
+        function addSystemMessage(content, type = 'info') {
+            const message = {
+                senderName: 'System',
+                messageType: 'SYSTEM',
+                subject: '',
+                content: content,
+                classification: 'UNCLASSIFIED'
+            };
+            showMessage(message);
+        }
+
+        function updateConnectionStatus(isConnected) {
+            const statusDiv = document.getElementById('connectionStatus');
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const sendBtn = document.getElementById('sendBtn');
+            const emergencyBtn = document.getElementById('emergencyBtn');
+            
+            if (isConnected) {
+                statusDiv.textContent = 'CONNECTED';
+                statusDiv.className = 'status connected';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                sendBtn.disabled = false;
+                emergencyBtn.disabled = false;
+            } else {
+                statusDiv.textContent = 'DISCONNECTED';
+                statusDiv.className = 'status disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                sendBtn.disabled = true;
+                emergencyBtn.disabled = true;
+            }
+        }
+
+        // Auto-scroll message display
+        document.getElementById('messageDisplay').addEventListener('DOMNodeInserted', function() {
+            this.scrollTop = this.scrollHeight;
+        });
+    </script>
+</body>
+</html>
