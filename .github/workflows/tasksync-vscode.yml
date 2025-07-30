@@ -1,0 +1,60 @@
+name: TaskSync VS Code Extension Execution
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_file:
+        description: "Plan file to execute"
+        required: true
+        default: "docs/plan_part3.md"
+        type: choice
+        options:
+          - docs/plan_part1.md
+          - docs/plan_part2.md
+          - docs/plan_part3.md
+
+jobs:
+  execute-tasksync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install VS Code CLI
+        run: |
+          wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+          sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+          sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+          sudo apt update
+          sudo apt install code
+
+      - name: Install TaskSync extension
+        run: |
+          code --install-extension 4regab.tasksync --force
+
+      - name: Execute TaskSync commands
+        run: |
+          # Create a workspace settings file
+          mkdir -p .vscode
+          cat > .vscode/settings.json << 'EOF'
+          {
+            "tasksync.planFile": "${{ inputs.plan_file }}",
+            "tasksync.autoUpdate": true,
+            "tasksync.generateReport": true,
+            "tasksync.projectType": "java-maven"
+          }
+          EOF
+
+          # Execute TaskSync via VS Code command line
+          code --new-window . --wait
+
+          # Use TaskSync API or commands (this depends on the extension's CLI interface)
+          # You might need to use the extension's specific commands here
+
+      - name: Commit and create PR
+        # ... rest of the commit/PR logic
