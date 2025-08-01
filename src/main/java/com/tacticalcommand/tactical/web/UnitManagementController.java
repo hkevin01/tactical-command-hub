@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.tacticalcommand.tactical.domain.MilitaryUnit;
-import com.tacticalcommand.tactical.domain.MilitaryUnit.UnitStatus;
 import com.tacticalcommand.tactical.domain.MilitaryUnit.OperationalDomain;
+import com.tacticalcommand.tactical.domain.MilitaryUnit.UnitStatus;
 import com.tacticalcommand.tactical.service.MilitaryUnitService;
 
 import jakarta.validation.Valid;

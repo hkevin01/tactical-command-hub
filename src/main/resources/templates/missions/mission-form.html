@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Mission Planning</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Mission Planning Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="text-success">
+                    <i class="bi bi-bullseye"></i>
+                    <span th:text="${mission != null ? 'Edit Mission' : 'Create New Mission'}">Mission Planning</span>
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard" class="text-success">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/missions" class="text-success">Missions</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span th:text="${mission != null ? 'Edit' : 'Create'}">Planning</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <a href="/missions" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Mission Board
+            </a>
+        </div>
+
+        <!-- Mission Planning Form -->
+        <form th:action="@{${mission != null ? '/missions/edit/' + mission.id : '/missions/create'}}" 
+              method="post" id="missionForm">
+            
+            <!-- Basic Mission Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        Mission Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="missionName" class="form-label">Mission Name *</label>
+                                <input type="text" class="form-control" id="missionName" name="name" 
+                                       th:value="${mission?.name}" required
+                                       placeholder="Operation Thunder Strike">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="missionType" class="form-label">Mission Type *</label>
+                                <select class="form-select" id="missionType" name="type" required>
+                                    <option value="">Select mission type...</option>
+                                    <option value="PATROL" th:selected="${mission?.type == 'PATROL'}">Patrol</option>
+                                    <option value="RECONNAISSANCE" th:selected="${mission?.type == 'RECONNAISSANCE'}">Reconnaissance</option>
+                                    <option value="COMBAT" th:selected="${mission?.type == 'COMBAT'}">Combat Operation</option>
+                                    <option value="TRAINING" th:selected="${mission?.type == 'TRAINING'}">Training Exercise</option>
+                                    <option value="LOGISTICS" th:selected="${mission?.type == 'LOGISTICS'}">Logistics Support</option>
+                                    <option value="HUMANITARIAN" th:selected="${mission?.type == 'HUMANITARIAN'}">Humanitarian Aid</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Priority *</label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option value="LOW" th:selected="${mission?.priority == 'LOW'}">Low</option>
+                                    <option value="MEDIUM" th:selected="${mission?.priority == 'MEDIUM'}">Medium</option>
+                                    <option value="HIGH" th:selected="${mission?.priority == 'HIGH'}">High</option>
+                                    <option value="CRITICAL" th:selected="${mission?.priority == 'CRITICAL'}">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="PLANNING" th:selected="${mission?.status == 'PLANNING'}">Planning</option>
+                                    <option value="APPROVED" th:selected="${mission?.status == 'APPROVED'}">Approved</option>
+                                    <option value="IN_PROGRESS" th:selected="${mission?.status == 'IN_PROGRESS'}">In Progress</option>
+                                    <option value="COMPLETED" th:selected="${mission?.status == 'COMPLETED'}">Completed</option>
+                                    <option value="CANCELLED" th:selected="${mission?.status == 'CANCELLED'}">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="classification" class="form-label">Classification</label>
+                                <select class="form-select" id="classification" name="classification">
+                                    <option value="UNCLASSIFIED">Unclassified</option>
+                                    <option value="CONFIDENTIAL">Confidential</option>
+                                    <option value="SECRET">Secret</option>
+                                    <option value="TOP_SECRET">Top Secret</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mission Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required
+                                  placeholder="Detailed description of mission objectives and requirements..."
+                                  th:text="${mission?.description}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Timeline -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-event"></i>
+                        Mission Timeline
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="startDate" class="form-label">Start Date *</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" 
+                                       th:value="${mission?.startDate}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="startTime" class="form-label">Start Time *</label>
+                                <input type="time" class="form-control" id="startTime" name="startTime" 
+                                       th:value="${mission?.startTime}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" 
+                                       th:value="${mission?.endDate}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="endTime" class="form-label">End Time</label>
+                                <input type="time" class="form-control" id="endTime" name="endTime" 
+                                       th:value="${mission?.endTime}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="duration" class="form-label">Estimated Duration</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="duration" name="duration" 
+                                           th:value="${mission?.duration}" placeholder="24">
+                                    <span class="input-group-text">hours</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="timezone" class="form-label">Time Zone</label>
+                                <select class="form-select" id="timezone" name="timezone">
+                                    <option value="UTC">UTC</option>
+                                    <option value="EST">EST</option>
+                                    <option value="PST">PST</option>
+                                    <option value="MST">MST</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location and Area of Operations -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-geo-alt"></i>
+                        Area of Operations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="areaName" class="form-label">Area Name</label>
+                                <input type="text" class="form-control" id="areaName" name="areaName" 
+                                       th:value="${mission?.areaName}" placeholder="Sector Alpha-7">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gridReference" class="form-label">Grid Reference</label>
+                                <input type="text" class="form-control" id="gridReference" name="gridReference" 
+                                       th:value="${mission?.gridReference}" placeholder="11S MU 12345 67890">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="latitude" class="form-label">Latitude</label>
+                                <input type="number" step="0.000001" class="form-control" id="latitude" name="latitude" 
+                                       th:value="${mission?.latitude}" placeholder="34.052235">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="longitude" class="form-label">Longitude</label>
+                                <input type="number" step="0.000001" class="form-control" id="longitude" name="longitude" 
+                                       th:value="${mission?.longitude}" placeholder="-118.243683">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="locationDescription" class="form-label">Location Description</label>
+                        <textarea class="form-control" id="locationDescription" name="locationDescription" rows="2"
+                                  placeholder="Detailed description of the operational area..."
+                                  th:text="${mission?.locationDescription}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit Assignment -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people"></i>
+                        Unit Assignment
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="assignedUnits" class="form-label">Assigned Units *</label>
+                                <select class="form-select" id="assignedUnits" name="assignedUnits" multiple required>
+                                    <option value="ALPHA-1">Alpha Company</option>
+                                    <option value="BRAVO-2">Bravo Company</option>
+                                    <option value="CHARLIE-3">Charlie Company</option>
+                                    <option value="DELTA-4">Delta Company</option>
+                                    <option value="ECHO-5">Echo Company</option>
+                                </select>
+                                <div class="form-text">Hold Ctrl/Cmd to select multiple units</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="missionCommander" class="form-label">Mission Commander *</label>
+                                <select class="form-select" id="missionCommander" name="commander" required>
+                                    <option value="">Select commander...</option>
+                                    <option value="MAJ-JOHNSON">Maj. Johnson, Robert</option>
+                                    <option value="CPT-SMITH">Capt. Smith, Sarah</option>
+                                    <option value="LT-DAVIS">1Lt. Davis, Michael</option>
+                                    <option value="LT-WILSON">2Lt. Wilson, James</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="personnelCount" class="form-label">Personnel Count</label>
+                                <input type="number" class="form-control" id="personnelCount" name="personnelCount" 
+                                       th:value="${mission?.personnelCount}" placeholder="50">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="vehicleCount" class="form-label">Vehicle Count</label>
+                                <input type="number" class="form-control" id="vehicleCount" name="vehicleCount" 
+                                       th:value="${mission?.vehicleCount}" placeholder="8">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="supportAssets" class="form-label">Support Assets</label>
+                                <input type="text" class="form-control" id="supportAssets" name="supportAssets" 
+                                       th:value="${mission?.supportAssets}" placeholder="Air support, Medical">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission Objectives -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check"></i>
+                        Mission Objectives
+                    </h5>
+                    <button type="button" class="btn btn-tactical btn-sm" onclick="addObjective()">
+                        <i class="bi bi-plus-circle"></i> Add Objective
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="objectivesList">
+                        <div class="objective-item mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text">1.</span>
+                                <input type="text" class="form-control" name="objectives[]" 
+                                       placeholder="Primary objective description..." required>
+                                <button type="button" class="btn btn-outline-danger" onclick="removeObjective(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources and Equipment -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-tools"></i>
+                        Resources and Equipment
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="requiredEquipment" class="form-label">Required Equipment</label>
+                                <textarea class="form-control" id="requiredEquipment" name="requiredEquipment" rows="3"
+                                          placeholder="List of required equipment and resources..."
+                                          th:text="${mission?.requiredEquipment}"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="logistics" class="form-label">Logistics Requirements</label>
+                                <textarea class="form-control" id="logistics" name="logistics" rows="3"
+                                          placeholder="Fuel, ammunition, food, medical supplies..."
+                                          th:text="${mission?.logistics}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="budget" class="form-label">Budget</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="budget" name="budget" 
+                                           th:value="${mission?.budget}" placeholder="100000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="fuelRequirement" class="form-label">Fuel Requirement</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="fuelRequirement" name="fuelRequirement" 
+                                           th:value="${mission?.fuelRequirement}" placeholder="500">
+                                    <span class="input-group-text">gallons</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="communicationPlan" class="form-label">Communication Plan</label>
+                                <select class="form-select" id="communicationPlan" name="communicationPlan">
+                                    <option value="STANDARD">Standard</option>
+                                    <option value="SECURE">Secure</option>
+                                    <option value="RADIO_SILENCE">Radio Silence</option>
+                                    <option value="EMERGENCY_ONLY">Emergency Only</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Risk Assessment
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="threatLevel" class="form-label">Threat Level</label>
+                                <select class="form-select" id="threatLevel" name="threatLevel">
+                                    <option value="LOW">Low</option>
+                                    <option value="MODERATE">Moderate</option>
+                                    <option value="HIGH">High</option>
+                                    <option value="EXTREME">Extreme</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="weatherConditions" class="form-label">Weather Conditions</label>
+                                <input type="text" class="form-control" id="weatherConditions" name="weatherConditions" 
+                                       th:value="${mission?.weatherConditions}" placeholder="Clear, 75°F, Light winds">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="riskFactors" class="form-label">Risk Factors</label>
+                        <textarea class="form-control" id="riskFactors" name="riskFactors" rows="2"
+                                  placeholder="Identified risks and mitigation strategies..."
+                                  th:text="${mission?.riskFactors}"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="contingencyPlan" class="form-label">Contingency Plan</label>
+                        <textarea class="form-control" id="contingencyPlan" name="contingencyPlan" rows="2"
+                                  placeholder="Emergency procedures and fallback plans..."
+                                  th:text="${mission?.contingencyPlan}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="saveDraft()">
+                                <i class="bi bi-file-earmark"></i> Save as Draft
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="previewMission()">
+                                <i class="bi bi-eye"></i> Preview
+                            </button>
+                        </div>
+                        <div>
+                            <a href="/missions" class="btn btn-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-tactical">
+                                <i class="bi bi-check-circle"></i>
+                                <span th:text="${mission != null ? 'Update Mission' : 'Create Mission'}">Create Mission</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <!-- Mission Planning Scripts -->
+    <th:block th:fragment="scripts">
+        <script>
+            let objectiveCounter = 1;
+
+            function addObjective() {
+                objectiveCounter++;
+                const objectivesList = document.getElementById('objectivesList');
+                const newObjective = document.createElement('div');
+                newObjective.className = 'objective-item mb-3';
+                newObjective.innerHTML = `
+                    <div class="input-group">
+                        <span class="input-group-text">${objectiveCounter}.</span>
+                        <input type="text" class="form-control" name="objectives[]" 
+                               placeholder="Objective description..." required>
+                        <button type="button" class="btn btn-outline-danger" onclick="removeObjective(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                `;
+                objectivesList.appendChild(newObjective);
+            }
+
+            function removeObjective(button) {
+                const objectiveItem = button.closest('.objective-item');
+                objectiveItem.remove();
+                updateObjectiveNumbers();
+            }
+
+            function updateObjectiveNumbers() {
+                const objectives = document.querySelectorAll('.objective-item');
+                objectives.forEach((objective, index) => {
+                    const numberSpan = objective.querySelector('.input-group-text');
+                    numberSpan.textContent = (index + 1) + '.';
+                });
+                objectiveCounter = objectives.length;
+            }
+
+            function saveDraft() {
+                const formData = new FormData(document.getElementById('missionForm'));
+                formData.append('status', 'DRAFT');
+                
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    alert('Mission saved as draft!');
+                }, 1000);
+            }
+
+            function previewMission() {
+                // Open a preview modal or navigate to preview page
+                alert('Mission preview functionality would be implemented here.');
+            }
+
+            // Form validation
+            document.getElementById('missionForm').addEventListener('submit', function(e) {
+                const requiredFields = this.querySelectorAll('[required]');
+                let valid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+                
+                if (!valid) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields.');
+                }
+            });
+
+            // Auto-save functionality
+            let autoSaveTimer;
+            function setupAutoSave() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    console.log('Auto-saving mission draft...');
+                    // Implement auto-save logic here
+                }, 30000); // Auto-save every 30 seconds
+            }
+
+            // Set up auto-save on form changes
+            document.getElementById('missionForm').addEventListener('input', setupAutoSave);
+            document.getElementById('missionForm').addEventListener('change', setupAutoSave);
+
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Mission planning form initialized');
+                
+                // Initialize date/time fields with current date
+                const now = new Date();
+                const today = now.toISOString().split('T')[0];
+                const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
+                
+                if (!document.getElementById('startDate').value) {
+                    document.getElementById('startDate').value = today;
+                }
+                if (!document.getElementById('startTime').value) {
+                    document.getElementById('startTime').value = currentTime;
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

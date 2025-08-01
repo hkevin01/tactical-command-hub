@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Unit Detail</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Unit Detail Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="text-success">
+                    <i class="bi bi-person-badge"></i>
+                    <span th:text="${unit.name}">Unit Name</span>
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard" class="text-success">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/units" class="text-success">Units</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${unit.name}">Unit Detail</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/units/edit/{id}(id=${unit.id})}" class="btn btn-tactical">
+                    <i class="bi bi-pencil"></i> Edit Unit
+                </a>
+                <a href="/units" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Roster
+                </a>
+            </div>
+        </div>
+
+        <!-- Unit Status Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 th:classappend="${unit.status == 'ACTIVE' ? 'text-success' : 
+                                           unit.status == 'DEPLOYED' ? 'text-warning' : 
+                                           unit.status == 'MAINTENANCE' ? 'text-info' : 'text-danger'}">
+                            Status
+                        </h5>
+                        <h2 th:text="${unit.status}" 
+                            th:classappend="${unit.status == 'ACTIVE' ? 'text-success' : 
+                                           unit.status == 'DEPLOYED' ? 'text-warning' : 
+                                           unit.status == 'MAINTENANCE' ? 'text-info' : 'text-danger'}">
+                            ACTIVE
+                        </h2>
+                        <small class="text-muted">Current status</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-info">Personnel</h5>
+                        <h2 class="text-info" th:text="${unit.personnelCount}">24</h2>
+                        <small class="text-muted">Active personnel</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-primary">Equipment</h5>
+                        <h2 class="text-primary" th:text="${unit.equipmentCount ?: '8'}">8</h2>
+                        <small class="text-muted">Equipment items</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-warning">Readiness</h5>
+                        <h2 class="text-warning" th:text="${unit.readinessLevel ?: '95%'}">95%</h2>
+                        <small class="text-muted">Combat ready</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Details Tabs -->
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="unitTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" 
+                                data-bs-target="#overview" type="button" role="tab">
+                            <i class="bi bi-info-circle"></i> Overview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="personnel-tab" data-bs-toggle="tab" 
+                                data-bs-target="#personnel" type="button" role="tab">
+                            <i class="bi bi-people"></i> Personnel
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="equipment-tab" data-bs-toggle="tab" 
+                                data-bs-target="#equipment" type="button" role="tab">
+                            <i class="bi bi-tools"></i> Equipment
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="location-tab" data-bs-toggle="tab" 
+                                data-bs-target="#location" type="button" role="tab">
+                            <i class="bi bi-geo-alt"></i> Location
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" 
+                                data-bs-target="#history" type="button" role="tab">
+                            <i class="bi bi-clock-history"></i> History
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="unitTabsContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-success mb-3">Unit Information</h5>
+                                <table class="table table-dark table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Unit ID:</strong></td>
+                                            <td th:text="${unit.id}">UNIT-001</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Unit Name:</strong></td>
+                                            <td th:text="${unit.name}">Alpha Company</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Unit Type:</strong></td>
+                                            <td th:text="${unit.type}">Infantry</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Commander:</strong></td>
+                                            <td th:text="${unit.commanderName ?: 'Not Assigned'}">Maj. Johnson</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Formation Date:</strong></td>
+                                            <td th:text="${unit.formationDate ?: 'Unknown'}">2023-01-15</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Base Location:</strong></td>
+                                            <td th:text="${unit.baseLocation ?: 'Not Set'}">Fort Alpha</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-success mb-3">Current Mission</h5>
+                                <div class="card bg-secondary">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-warning">Operation Thunder</h6>
+                                        <p class="card-text">Patrol and secure designated area of operations. Maintain defensive positions and report any hostile activity.</p>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">Started: 2024-01-15</small>
+                                            <span class="badge bg-warning">In Progress</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h5 class="text-success mb-3 mt-4">Recent Activity</h5>
+                                <div class="activity-feed">
+                                    <div class="activity-item mb-2">
+                                        <small class="text-muted">08:30 UTC</small>
+                                        <p class="mb-0">Position report submitted</p>
+                                    </div>
+                                    <div class="activity-item mb-2">
+                                        <small class="text-muted">07:45 UTC</small>
+                                        <p class="mb-0">Equipment maintenance completed</p>
+                                    </div>
+                                    <div class="activity-item mb-2">
+                                        <small class="text-muted">06:00 UTC</small>
+                                        <p class="mb-0">Mission briefing conducted</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personnel Tab -->
+                    <div class="tab-pane fade" id="personnel" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-success mb-0">Personnel Roster</h5>
+                            <button class="btn btn-tactical btn-sm">
+                                <i class="bi bi-person-plus"></i> Add Personnel
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Contact</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>MAJ</td>
+                                        <td>Johnson, Robert</td>
+                                        <td>Unit Commander</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>CMD-001</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>CPT</td>
+                                        <td>Smith, Sarah</td>
+                                        <td>Executive Officer</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>XO-001</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>1LT</td>
+                                        <td>Davis, Michael</td>
+                                        <td>Platoon Leader</td>
+                                        <td><span class="badge bg-warning">Deployed</span></td>
+                                        <td>PL-001</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>SGT</td>
+                                        <td>Wilson, James</td>
+                                        <td>Squad Leader</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>SL-001</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Equipment Tab -->
+                    <div class="tab-pane fade" id="equipment" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-success mb-0">Equipment Inventory</h5>
+                            <button class="btn btn-tactical btn-sm">
+                                <i class="bi bi-plus-circle"></i> Add Equipment
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-info">Vehicles</h6>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item bg-dark border-secondary">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">M1A2 Abrams</h6>
+                                                <small class="text-muted">Serial: T-001</small>
+                                            </div>
+                                            <span class="badge bg-success">Operational</span>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item bg-dark border-secondary">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">HMMWV</h6>
+                                                <small class="text-muted">Serial: H-002</small>
+                                            </div>
+                                            <span class="badge bg-warning">Maintenance</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-info">Weapons</h6>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item bg-dark border-secondary">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">M4A1 Carbine</h6>
+                                                <small class="text-muted">Qty: 24</small>
+                                            </div>
+                                            <span class="badge bg-success">Ready</span>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item bg-dark border-secondary">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">M240B Machine Gun</h6>
+                                                <small class="text-muted">Qty: 4</small>
+                                            </div>
+                                            <span class="badge bg-success">Ready</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Tab -->
+                    <div class="tab-pane fade" id="location" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-success mb-3">Current Position</h5>
+                                <table class="table table-dark table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Latitude:</strong></td>
+                                            <td th:text="${unit.latitude}">34.0522</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Longitude:</strong></td>
+                                            <td th:text="${unit.longitude}">-118.2437</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Elevation:</strong></td>
+                                            <td>285 ft</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Grid Reference:</strong></td>
+                                            <td>11S MU 12345 67890</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Last Update:</strong></td>
+                                            <td>08:45 UTC</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <button class="btn btn-tactical">
+                                    <i class="bi bi-geo-alt"></i> Update Position
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-success mb-3">Map View</h5>
+                                <div class="map-placeholder bg-secondary rounded d-flex align-items-center justify-content-center" 
+                                     style="height: 300px;">
+                                    <div class="text-center">
+                                        <i class="bi bi-map text-muted" style="font-size: 3rem;"></i>
+                                        <p class="text-muted mt-2">Map integration would be displayed here</p>
+                                        <small class="text-muted">Interactive tactical map showing unit position</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div class="tab-pane fade" id="history" role="tabpanel">
+                        <h5 class="text-success mb-3">Unit History</h5>
+                        <div class="timeline">
+                            <div class="timeline-item mb-4">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Mission Assignment</h6>
+                                    <p class="timeline-description">Assigned to Operation Thunder - Patrol sector Alpha-7</p>
+                                    <small class="text-muted">2024-01-15 06:00 UTC</small>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item mb-4">
+                                <div class="timeline-marker bg-info"></div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Equipment Maintenance</h6>
+                                    <p class="timeline-description">Completed scheduled maintenance on primary vehicle</p>
+                                    <small class="text-muted">2024-01-14 14:30 UTC</small>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item mb-4">
+                                <div class="timeline-marker bg-warning"></div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Status Change</h6>
+                                    <p class="timeline-description">Unit status changed from MAINTENANCE to ACTIVE</p>
+                                    <small class="text-muted">2024-01-13 08:00 UTC</small>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item mb-4">
+                                <div class="timeline-marker bg-primary"></div>
+                                <div class="timeline-content">
+                                    <h6 class="timeline-title">Personnel Change</h6>
+                                    <p class="timeline-description">New personnel assigned - Sgt. Wilson joined unit</p>
+                                    <small class="text-muted">2024-01-10 12:00 UTC</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Unit Detail Scripts -->
+    <th:block th:fragment="scripts">
+        <style>
+            .timeline {
+                position: relative;
+                padding-left: 30px;
+            }
+            
+            .timeline:before {
+                content: '';
+                position: absolute;
+                left: 15px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: var(--bs-success);
+            }
+            
+            .timeline-item {
+                position: relative;
+            }
+            
+            .timeline-marker {
+                position: absolute;
+                left: -22px;
+                top: 0;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: 2px solid var(--bs-dark);
+            }
+            
+            .timeline-content {
+                background: var(--bs-gray-800);
+                padding: 15px;
+                border-radius: 8px;
+                border-left: 3px solid var(--bs-success);
+            }
+            
+            .timeline-title {
+                color: var(--bs-success);
+                margin-bottom: 5px;
+            }
+            
+            .activity-item {
+                padding: 8px 0;
+                border-bottom: 1px solid var(--bs-gray-700);
+            }
+            
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Unit detail page initialized');
+                
+                // Initialize any charts or real-time updates here
+                updateUnitStatus();
+            });
+            
+            function updateUnitStatus() {
+                // Simulate real-time status updates
+                console.log('Updating unit status...');
+            }
+            
+            // Auto-refresh unit data every 60 seconds
+            setInterval(updateUnitStatus, 60000);
+        </script>
+    </th:block>
+</body>
+</html>

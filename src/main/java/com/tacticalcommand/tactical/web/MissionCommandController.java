@@ -3,11 +3,7 @@ package com.tacticalcommand.tactical.web;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,12 +11,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.tacticalcommand.tactical.domain.Mission;
 import com.tacticalcommand.tactical.domain.MilitaryUnit;
+import com.tacticalcommand.tactical.domain.Mission;
 import com.tacticalcommand.tactical.domain.Mission.MissionStatus;
 import com.tacticalcommand.tactical.domain.Mission.Priority;
-import com.tacticalcommand.tactical.service.MissionService;
 import com.tacticalcommand.tactical.service.MilitaryUnitService;
+import com.tacticalcommand.tactical.service.MissionService;
 
 import jakarta.validation.Valid;
 

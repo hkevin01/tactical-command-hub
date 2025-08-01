@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Mission Command</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Mission Command Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-success">
+                <i class="bi bi-bullseye"></i>
+                Mission Command
+            </h1>
+            <div class="d-flex gap-2">
+                <a href="/missions/new" class="btn btn-tactical">
+                    <i class="bi bi-plus-circle"></i> Plan Mission
+                </a>
+                <a href="/missions/execution" class="btn btn-outline-success">
+                    <i class="bi bi-play-circle"></i> Execution View
+                </a>
+            </div>
+        </div>
+
+        <!-- Mission Status Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-info">Planning</h5>
+                        <h2 class="text-info" th:text="${missionStatusCounts['PLANNING'] ?: 0}">0</h2>
+                        <small class="text-muted">Missions in planning phase</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-success">Active</h5>
+                        <h2 class="text-success" th:text="${missionStatusCounts['ACTIVE'] ?: 0}">0</h2>
+                        <small class="text-muted">Currently executing</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-warning">Suspended</h5>
+                        <h2 class="text-warning" th:text="${missionStatusCounts['SUSPENDED'] ?: 0}">0</h2>
+                        <small class="text-muted">Temporarily halted</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-primary">Completed</h5>
+                        <h2 class="text-primary" th:text="${missionStatusCounts['COMPLETED'] ?: 0}">0</h2>
+                        <small class="text-muted">Successfully completed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-funnel"></i>
+                    Mission Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="get" th:action="@{/missions}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Statuses</option>
+                                <option th:each="status : ${allStatuses}" 
+                                        th:value="${status}" 
+                                        th:text="${status.name()}"
+                                        th:selected="${status == statusFilter}">Status</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="">All Priorities</option>
+                                <option th:each="priority : ${allPriorities}" 
+                                        th:value="${priority}" 
+                                        th:text="${priority.name()}"
+                                        th:selected="${priority == priorityFilter}">Priority</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-tactical me-2">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                            <a href="/missions" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mission Board -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-kanban"></i>
+                    Mission Board
+                </h5>
+                <span class="badge bg-success" th:text="${totalElements + ' missions'}">0 missions</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3" th:if="${filteredMissions != null ? !filteredMissions.isEmpty() : !missions.content.isEmpty()}">
+                    <div class="col-md-6 col-lg-4" th:each="mission : ${filteredMissions ?: missions.content}">
+                        <div class="card h-100" 
+                             th:class="'card h-100 border-' + 
+                                      ${mission.priority.name() == 'CRITICAL' ? 'danger' : 
+                                       (mission.priority.name() == 'HIGH' ? 'warning' : 
+                                        (mission.priority.name() == 'MEDIUM' ? 'info' : 'secondary'))}">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0" th:text="${mission.missionCode}">ALPHA-001</h6>
+                                <div class="d-flex gap-1">
+                                    <!-- Priority Badge -->
+                                    <span class="badge" 
+                                          th:class="'badge bg-' + 
+                                                   ${mission.priority.name() == 'CRITICAL' ? 'danger' : 
+                                                    (mission.priority.name() == 'HIGH' ? 'warning' : 
+                                                     (mission.priority.name() == 'MEDIUM' ? 'info' : 'secondary'))}"
+                                          th:text="${mission.priority.name()}">HIGH</span>
+                                    
+                                    <!-- Status Badge -->
+                                    <span class="badge"
+                                          th:class="'badge bg-' + 
+                                                   ${mission.status.name() == 'ACTIVE' ? 'success' : 
+                                                    (mission.status.name() == 'PLANNING' ? 'info' : 
+                                                     (mission.status.name() == 'SUSPENDED' ? 'warning' : 'secondary'))}"
+                                          th:text="${mission.status.name()}">ACTIVE</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title" th:text="${mission.missionName}">Operation Thunder Strike</h6>
+                                <p class="card-text small text-muted" th:text="${mission.objective}">
+                                    Secure strategic objectives in sector Alpha-7
+                                </p>
+                                
+                                <!-- Mission Details -->
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i>
+                                        Start: <span th:text="${mission.startTime != null ? #temporals.format(mission.startTime, 'MM/dd HH:mm') : 'TBD'}">01/15 08:00</span>
+                                    </small>
+                                </div>
+                                
+                                <div class="mb-2" th:if="${mission.endTime != null}">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        End: <span th:text="${#temporals.format(mission.endTime, 'MM/dd HH:mm')}">01/15 18:00</span>
+                                    </small>
+                                </div>
+                                
+                                <div class="mb-3" th:if="${mission.commander != null}">
+                                    <small class="text-muted">
+                                        <i class="bi bi-person-badge"></i>
+                                        Commander: <span th:text="${mission.commander}">COL Smith</span>
+                                    </small>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="mb-2" th:if="${mission.completionPercentage != null}">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small class="text-muted">Progress</small>
+                                        <small class="text-muted" th:text="${mission.completionPercentage + '%'}">75%</small>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             th:style="'width: ' + ${mission.completionPercentage} + '%'"
+                                             th:aria-valuenow="${mission.completionPercentage}"
+                                             aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted" th:text="${mission.missionType?.name()}">ASSAULT</small>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/missions/{id}(id=${mission.id})}" 
+                                           class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/missions/{id}/edit(id=${mission.id})}" 
+                                           class="btn btn-outline-warning" title="Edit Mission">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div th:if="${filteredMissions != null ? filteredMissions.isEmpty() : missions.content.isEmpty()}" 
+                     class="text-center text-muted py-5">
+                    <i class="bi bi-info-circle fs-1 mb-3"></i>
+                    <h5>No missions found</h5>
+                    <p>No missions match the current filters, or no missions have been created yet.</p>
+                    <a href="/missions/new" class="btn btn-tactical">
+                        <i class="bi bi-plus-circle"></i> Create First Mission
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Mission pagination" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center mt-3">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/missions(page=${currentPage - 1}, size=20, status=${statusFilter}, priority=${priorityFilter})}">
+                        Previous
+                    </a>
+                </li>
+                
+                <li class="page-item" 
+                    th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:if="${page >= currentPage - 2 and page <= currentPage + 2}"
+                    th:classappend="${page == currentPage} ? 'active'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/missions(page=${page}, size=20, status=${statusFilter}, priority=${priorityFilter})}"
+                       th:text="${page + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/missions(page=${currentPage + 1}, size=20, status=${statusFilter}, priority=${priorityFilter})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </main>
+
+    <!-- Mission Board Scripts -->
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Auto-submit form on filter change
+                const filterForm = document.querySelector('form[method="get"]');
+                const selectElements = filterForm.querySelectorAll('select');
+                
+                selectElements.forEach(select => {
+                    select.addEventListener('change', function() {
+                        filterForm.submit();
+                    });
+                });
+
+                // Add hover effects to mission cards
+                const missionCards = document.querySelectorAll('.card');
+                missionCards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.transition = 'transform 0.2s ease';
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                    });
+                });
+
+                // Update mission status indicators
+                function updateMissionCards() {
+                    // This would connect to WebSocket updates
+                    console.log('Mission board ready for real-time updates');
+                }
+
+                updateMissionCards();
+            });
+        </script>
+    </th:block>
+</body>
+</html>

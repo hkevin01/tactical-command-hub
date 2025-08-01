@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title th:text="${isEdit ? 'Edit Unit' : 'Add New Unit'}">Unit Form</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Form Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-success">
+                <i class="bi bi-plus-circle" th:if="${!isEdit}"></i>
+                <i class="bi bi-pencil" th:if="${isEdit}"></i>
+                <span th:text="${isEdit ? 'Edit Unit' : 'Add New Unit'}">Unit Form</span>
+            </h1>
+            <a href="/units" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Units
+            </a>
+        </div>
+
+        <!-- Unit Form -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle"></i>
+                            Unit Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="${isEdit ? '/units/' + unit.id : '/units'}" method="post" th:object="${unit}">
+                            
+                            <!-- Basic Information -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="callsign" class="form-label">Callsign *</label>
+                                    <input type="text" class="form-control" id="callsign" 
+                                           th:field="*{callsign}" 
+                                           th:class="${#fields.hasErrors('callsign')} ? 'form-control is-invalid' : 'form-control'"
+                                           required placeholder="e.g., ALPHA-1, BRAVO-2">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('callsign')}" th:errors="*{callsign}">
+                                        Callsign error
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="unitName" class="form-label">Unit Name *</label>
+                                    <input type="text" class="form-control" id="unitName" 
+                                           th:field="*{unitName}"
+                                           th:class="${#fields.hasErrors('unitName')} ? 'form-control is-invalid' : 'form-control'"
+                                           required placeholder="e.g., 1st Infantry Battalion">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('unitName')}" th:errors="*{unitName}">
+                                        Unit name error
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="unitType" class="form-label">Unit Type *</label>
+                                    <select class="form-select" id="unitType" th:field="*{unitType}" required>
+                                        <option value="">Select Type</option>
+                                        <option th:each="type : ${allUnitTypes}" 
+                                                th:value="${type}" 
+                                                th:text="${type.name()}">Type</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('unitType')}" th:errors="*{unitType}">
+                                        Unit type error
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="domain" class="form-label">Operational Domain *</label>
+                                    <select class="form-select" id="domain" th:field="*{domain}" required>
+                                        <option value="">Select Domain</option>
+                                        <option th:each="domain : ${allDomains}" 
+                                                th:value="${domain}" 
+                                                th:text="${domain.name()}">Domain</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('domain')}" th:errors="*{domain}">
+                                        Domain error
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="personnelCount" class="form-label">Personnel Count</label>
+                                    <input type="number" class="form-control" id="personnelCount" 
+                                           th:field="*{personnelCount}"
+                                           min="1" max="10000" placeholder="120">
+                                </div>
+                            </div>
+
+                            <!-- Status Information -->
+                            <h6 class="text-success mb-3">
+                                <i class="bi bi-speedometer"></i>
+                                Status Information
+                            </h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label for="status" class="form-label">Unit Status</label>
+                                    <select class="form-select" id="status" th:field="*{status}">
+                                        <option th:each="status : ${allStatuses}" 
+                                                th:value="${status}" 
+                                                th:text="${status.name()}">Status</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="readinessLevel" class="form-label">Readiness Level</label>
+                                    <select class="form-select" id="readinessLevel" th:field="*{readinessLevel}">
+                                        <option th:each="level : ${allReadinessLevels}" 
+                                                th:value="${level}" 
+                                                th:text="${level.name()}">Level</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="communicationStatus" class="form-label">Comms Status</label>
+                                    <select class="form-select" id="communicationStatus" th:field="*{communicationStatus}">
+                                        <option th:each="commStatus : ${allCommunicationStatuses}" 
+                                                th:value="${commStatus}" 
+                                                th:text="${commStatus.name()}">Status</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="threatLevel" class="form-label">Threat Level</label>
+                                    <select class="form-select" id="threatLevel" th:field="*{threatLevel}">
+                                        <option th:each="threat : ${allThreatLevels}" 
+                                                th:value="${threat}" 
+                                                th:text="${threat.name()}">Level</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Position Information -->
+                            <h6 class="text-success mb-3">
+                                <i class="bi bi-geo-alt"></i>
+                                Position Information
+                            </h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="number" class="form-control" id="latitude" 
+                                           th:field="*{latitude}"
+                                           step="0.000001" min="-90" max="90" 
+                                           placeholder="34.052235">
+                                    <small class="form-text text-muted">Decimal degrees (-90 to 90)</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="number" class="form-control" id="longitude" 
+                                           th:field="*{longitude}"
+                                           step="0.000001" min="-180" max="180" 
+                                           placeholder="-118.243685">
+                                    <small class="form-text text-muted">Decimal degrees (-180 to 180)</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="altitude" class="form-label">Altitude (m)</label>
+                                    <input type="number" class="form-control" id="altitude" 
+                                           th:field="*{altitude}"
+                                           step="0.1" placeholder="100.5">
+                                    <small class="form-text text-muted">Meters above sea level</small>
+                                </div>
+                            </div>
+
+                            <!-- Equipment and Notes -->
+                            <h6 class="text-success mb-3">
+                                <i class="bi bi-tools"></i>
+                                Additional Information
+                            </h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="equipment" class="form-label">Equipment</label>
+                                    <textarea class="form-control" id="equipment" 
+                                              th:field="*{equipment}"
+                                              rows="3" placeholder="List major equipment and assets..."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="notes" class="form-label">Notes</label>
+                                    <textarea class="form-control" id="notes" 
+                                              th:field="*{notes}"
+                                              rows="3" placeholder="Additional operational notes..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-between">
+                                <a href="/units" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-tactical">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span th:text="${isEdit ? 'Update Unit' : 'Create Unit'}">Save Unit</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Side Panel with Help -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-question-circle"></i>
+                            Field Guide
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="text-success">Callsign Format</h6>
+                        <p class="small text-muted">
+                            Use NATO phonetic alphabet followed by number:
+                            <br>• ALPHA-1, BRAVO-2, CHARLIE-3
+                            <br>• Use consistent format for your organization
+                        </p>
+
+                        <h6 class="text-success mt-3">Unit Types</h6>
+                        <ul class="small text-muted">
+                            <li>INFANTRY - Ground troops</li>
+                            <li>ARMOR - Tank units</li>
+                            <li>ARTILLERY - Fire support</li>
+                            <li>AVIATION - Aircraft units</li>
+                            <li>NAVAL - Sea vessels</li>
+                            <li>SPECIAL_FORCES - Elite units</li>
+                        </ul>
+
+                        <h6 class="text-success mt-3">Readiness Levels</h6>
+                        <ul class="small text-muted">
+                            <li><strong>C1</strong> - Fully mission capable</li>
+                            <li><strong>C2</strong> - Substantially capable</li>
+                            <li><strong>C3</strong> - Marginally capable</li>
+                            <li><strong>C4</strong> - Not mission capable</li>
+                        </ul>
+
+                        <h6 class="text-success mt-3">Position Guidelines</h6>
+                        <p class="small text-muted">
+                            Enter coordinates in decimal degrees:
+                            <br>• Use GPS coordinates when available
+                            <br>• Altitude is optional but recommended
+                            <br>• Leave blank if position unknown
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Unit Form Scripts -->
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Form validation
+                const form = document.querySelector('form');
+                const requiredFields = form.querySelectorAll('[required]');
+                
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            field.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        alert('Please fill in all required fields.');
+                    }
+                });
+
+                // Position coordinate validation
+                const latField = document.getElementById('latitude');
+                const lonField = document.getElementById('longitude');
+                
+                function validateCoordinate(field, min, max) {
+                    field.addEventListener('blur', function() {
+                        const value = parseFloat(field.value);
+                        if (field.value && (isNaN(value) || value < min || value > max)) {
+                            field.classList.add('is-invalid');
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                }
+                
+                validateCoordinate(latField, -90, 90);
+                validateCoordinate(lonField, -180, 180);
+
+                // Auto-format callsign to uppercase
+                const callsignField = document.getElementById('callsign');
+                callsignField.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

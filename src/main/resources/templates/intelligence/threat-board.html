@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Intelligence Center</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Intelligence Center Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-success">
+                <i class="bi bi-eye-fill"></i>
+                Intelligence Center
+            </h1>
+            <div class="d-flex gap-2">
+                <a href="/intelligence/new" class="btn btn-tactical">
+                    <i class="bi bi-plus-circle"></i> New Report
+                </a>
+                <a href="/intelligence/threats" class="btn btn-outline-warning">
+                    <i class="bi bi-shield-exclamation"></i> Threat Assessment
+                </a>
+                <a href="/intelligence/geospatial" class="btn btn-outline-info">
+                    <i class="bi bi-geo-alt"></i> Geospatial Intel
+                </a>
+            </div>
+        </div>
+
+        <!-- Intelligence Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-info">Total Reports</h5>
+                        <h2 class="text-info" th:text="${totalReports}">45</h2>
+                        <small class="text-muted">Intelligence reports</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-success">Verified</h5>
+                        <h2 class="text-success" th:text="${verifiedReports}">32</h2>
+                        <small class="text-muted">Confirmed reports</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-warning">Pending</h5>
+                        <h2 class="text-warning" th:text="${pendingReports}">13</h2>
+                        <small class="text-muted">Awaiting verification</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="text-danger">High Threat</h5>
+                        <h2 class="text-danger" th:text="${highThreatReports}">8</h2>
+                        <small class="text-muted">Critical intelligence</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-shield-exclamation"></i>
+                            Current Threat Level
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="threat-indicator mb-3">
+                            <span class="badge bg-warning fs-6 p-3">ELEVATED</span>
+                        </div>
+                        <p class="text-muted">Updated 15 minutes ago</p>
+                        <a href="/intelligence/threats" class="btn btn-outline-warning btn-sm">
+                            View Assessment
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-collection"></i>
+                            Collection Requirements
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <h3 class="text-info">8</h3>
+                        <p class="text-muted">Active requirements</p>
+                        <a href="/intelligence/collection" class="btn btn-outline-info btn-sm">
+                            Manage Collection
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history"></i>
+                            Recent Activity
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-item mb-2">
+                            <small class="text-success">
+                                <i class="bi bi-check-circle"></i>
+                                Report INTEL-2025-001 verified
+                            </small>
+                        </div>
+                        <div class="activity-item mb-2">
+                            <small class="text-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Threat level elevated in Sector 7
+                            </small>
+                        </div>
+                        <div class="activity-item mb-2">
+                            <small class="text-info">
+                                <i class="bi bi-plus-circle"></i>
+                                New HUMINT source activated
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-funnel"></i>
+                    Intelligence Filters
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="get" th:action="@{/intelligence}">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="severity" class="form-label">Threat Severity</label>
+                            <select class="form-select" id="severity" name="severity">
+                                <option value="">All Levels</option>
+                                <option th:each="level : ${threatLevels}" 
+                                        th:value="${level}" 
+                                        th:text="${level}"
+                                        th:selected="${level == severityFilter}">Level</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="verified" class="form-label">Verification Status</label>
+                            <select class="form-select" id="verified" name="verified">
+                                <option value="">All Reports</option>
+                                <option value="true" th:selected="${verifiedFilter == true}">Verified</option>
+                                <option value="false" th:selected="${verifiedFilter == false}">Unverified</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="source" class="form-label">Source Type</label>
+                            <select class="form-select" id="source" name="source">
+                                <option value="">All Sources</option>
+                                <option value="HUMINT">HUMINT</option>
+                                <option value="SIGINT">SIGINT</option>
+                                <option value="IMINT">IMINT</option>
+                                <option value="OSINT">OSINT</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-tactical me-2">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                            <a href="/intelligence" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Intelligence Reports Grid -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-text"></i>
+                    Intelligence Reports
+                </h5>
+                <span class="badge bg-success" th:text="${totalElements + ' reports'}">45 reports</span>
+            </div>
+            <div class="card-body">
+                <!-- Sample Intelligence Reports -->
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-danger">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <small class="text-muted">INTEL-2025-001</small>
+                                <span class="badge bg-danger">CRITICAL</span>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">Hostile Movement Detected</h6>
+                                <p class="card-text small">
+                                    Multiple armored vehicles observed moving north through Checkpoint Charlie.
+                                    Estimated 20+ personnel, unknown intentions.
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt"></i>
+                                        Grid: 34.0522, -118.2437
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        08:45 UTC
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge bg-success">VERIFIED</span>
+                                    <span class="badge bg-info">HUMINT</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Analyst: Smith</small>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-warning">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <small class="text-muted">INTEL-2025-002</small>
+                                <span class="badge bg-warning">HIGH</span>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">Communication Intercept</h6>
+                                <p class="card-text small">
+                                    Encrypted radio transmission intercepted. Pattern analysis suggests 
+                                    coordination between unknown units.
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-broadcast"></i>
+                                        Frequency: 145.250 MHz
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        07:30 UTC
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge bg-secondary">PENDING</span>
+                                    <span class="badge bg-info">SIGINT</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Analyst: Johnson</small>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-info">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <small class="text-muted">INTEL-2025-003</small>
+                                <span class="badge bg-info">MEDIUM</span>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title">Satellite Imagery Analysis</h6>
+                                <p class="card-text small">
+                                    New construction activity detected at previously abandoned facility.
+                                    No obvious military indicators visible.
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt"></i>
+                                        Grid: 35.1234, -119.5678
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        06:15 UTC
+                                    </small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge bg-success">VERIFIED</span>
+                                    <span class="badge bg-info">IMINT</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Analyst: Davis</small>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Intelligence pagination" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center mt-3">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/intelligence(page=${currentPage - 1}, size=20)}">
+                        Previous
+                    </a>
+                </li>
+                
+                <li class="page-item" 
+                    th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:if="${page >= currentPage - 2 and page <= currentPage + 2}"
+                    th:classappend="${page == currentPage} ? 'active'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/intelligence(page=${page}, size=20)}"
+                       th:text="${page + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/intelligence(page=${currentPage + 1}, size=20)}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </main>
+
+    <!-- Intelligence Center Scripts -->
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Auto-submit form on filter change
+                const filterForm = document.querySelector('form[method="get"]');
+                const selectElements = filterForm.querySelectorAll('select');
+                
+                selectElements.forEach(select => {
+                    select.addEventListener('change', function() {
+                        filterForm.submit();
+                    });
+                });
+
+                // Real-time threat level updates
+                function updateThreatLevel() {
+                    // This would connect to WebSocket for real-time updates
+                    console.log('Intelligence center ready for real-time updates');
+                }
+
+                // Animate threat indicator
+                const threatIndicator = document.querySelector('.threat-indicator .badge');
+                if (threatIndicator) {
+                    setInterval(() => {
+                        threatIndicator.style.opacity = '0.5';
+                        setTimeout(() => {
+                            threatIndicator.style.opacity = '1';
+                        }, 500);
+                    }, 2000);
+                }
+
+                updateThreatLevel();
+            });
+        </script>
+    </th:block>
+</body>
+</html>
