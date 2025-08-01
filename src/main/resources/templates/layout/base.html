@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle + ' - Tactical Command Hub' : 'Tactical Command Hub'}">Tactical Command Hub</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Tactical CSS -->
+    <style>
+        :root {
+            --tactical-dark: #1a1f2e;
+            --tactical-darker: #141828;
+            --tactical-green: #00ff9f;
+            --tactical-green-dim: #00cc7f;
+            --tactical-amber: #ffb000;
+            --tactical-red: #ff4757;
+            --tactical-blue: #3742fa;
+            --tactical-gray: #2f3542;
+            --tactical-light-gray: #57606f;
+        }
+
+        body {
+            background-color: var(--tactical-darker);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-tactical {
+            background: linear-gradient(90deg, var(--tactical-dark) 0%, var(--tactical-darker) 100%);
+            border-bottom: 2px solid var(--tactical-green);
+        }
+
+        .navbar-brand {
+            color: var(--tactical-green) !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: #ffffff !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--tactical-green) !important;
+            text-shadow: 0 0 10px var(--tactical-green);
+        }
+
+        .nav-link.active {
+            color: var(--tactical-green) !important;
+            background-color: rgba(0, 255, 159, 0.1);
+            border-radius: 5px;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--tactical-dark) 0%, var(--tactical-darker) 100%);
+            border-right: 2px solid var(--tactical-green);
+            min-height: calc(100vh - 76px);
+        }
+
+        .sidebar .nav-link {
+            color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(0, 255, 159, 0.1);
+            border-left: 4px solid var(--tactical-green);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: rgba(0, 255, 159, 0.2);
+            border-left: 4px solid var(--tactical-green);
+            color: var(--tactical-green);
+        }
+
+        .main-content {
+            background-color: var(--tactical-darker);
+            min-height: calc(100vh - 76px);
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--tactical-dark);
+            border: 1px solid var(--tactical-gray);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, var(--tactical-gray) 0%, var(--tactical-dark) 100%);
+            border-bottom: 1px solid var(--tactical-green);
+            color: var(--tactical-green);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-tactical {
+            background: linear-gradient(45deg, var(--tactical-green) 0%, var(--tactical-green-dim) 100%);
+            border: none;
+            color: var(--tactical-dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-tactical:hover {
+            background: linear-gradient(45deg, var(--tactical-green-dim) 0%, var(--tactical-green) 100%);
+            box-shadow: 0 5px 15px rgba(0, 255, 159, 0.4);
+            color: var(--tactical-dark);
+        }
+
+        .btn-danger-tactical {
+            background: linear-gradient(45deg, var(--tactical-red) 0%, #e73c3e 100%);
+            border: none;
+            color: #ffffff;
+        }
+
+        .btn-warning-tactical {
+            background: linear-gradient(45deg, var(--tactical-amber) 0%, #e8a900 100%);
+            border: none;
+            color: var(--tactical-dark);
+        }
+
+        .table-tactical {
+            background-color: var(--tactical-dark);
+            color: #ffffff;
+        }
+
+        .table-tactical thead th {
+            background-color: var(--tactical-gray);
+            border-color: var(--tactical-green);
+            color: var(--tactical-green);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .table-tactical tbody tr:hover {
+            background-color: rgba(0, 255, 159, 0.1);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--tactical-gray);
+            border: 1px solid var(--tactical-light-gray);
+            color: #ffffff;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--tactical-gray);
+            border-color: var(--tactical-green);
+            box-shadow: 0 0 10px rgba(0, 255, 159, 0.3);
+            color: #ffffff;
+        }
+
+        .alert-tactical {
+            background: linear-gradient(90deg, rgba(0, 255, 159, 0.1) 0%, rgba(0, 255, 159, 0.05) 100%);
+            border: 1px solid var(--tactical-green);
+            color: var(--tactical-green);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active { background-color: var(--tactical-green); }
+        .status-inactive { background-color: var(--tactical-light-gray); }
+        .status-deployed { background-color: var(--tactical-blue); }
+        .status-maintenance { background-color: var(--tactical-amber); }
+        .status-offline { background-color: var(--tactical-red); }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .mission-clock {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--tactical-green);
+            text-shadow: 0 0 10px var(--tactical-green);
+        }
+
+        .threat-high { color: var(--tactical-red); }
+        .threat-medium { color: var(--tactical-amber); }
+        .threat-low { color: var(--tactical-green); }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(20, 24, 40, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner-tactical {
+            border: 4px solid var(--tactical-gray);
+            border-top: 4px solid var(--tactical-green);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-tactical">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-shield-check"></i>
+                Tactical Command Hub
+            </a>
+            
+            <!-- Mission Clock -->
+            <div class="mission-clock d-none d-lg-block">
+                <span id="mission-time"></span> UTC
+            </div>
+            
+            <div class="navbar-nav ms-auto">
+                <!-- Alerts Indicator -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge bg-danger">3</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end bg-dark border-success">
+                        <li><h6 class="dropdown-header text-success">Active Alerts</h6></li>
+                        <li><a class="dropdown-item text-warning" href="#"><i class="bi bi-exclamation-triangle"></i> Unit Bravo-2 Communication Lost</a></li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-shield-exclamation"></i> Threat Level Elevated</a></li>
+                        <li><a class="dropdown-item text-info" href="#"><i class="bi bi-info-circle"></i> Mission Alpha-1 Status Update</a></li>
+                    </ul>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" sec:authentication="name">
+                        <i class="bi bi-person-circle"></i>
+                        <span sec:authentication="name">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end bg-dark border-success">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <nav class="nav flex-column">
+                    <a class="nav-link" th:href="@{/dashboard}" 
+                       th:classappend="${#request.requestURI.startsWith('/dashboard') ? 'active' : ''}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="nav-link" th:href="@{/units}" 
+                       th:classappend="${#request.requestURI.startsWith('/units') ? 'active' : ''}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Units</span>
+                    </a>
+                    <a class="nav-link" th:href="@{/missions}" 
+                       th:classappend="${#request.requestURI.startsWith('/missions') ? 'active' : ''}">
+                        <i class="bi bi-bullseye"></i>
+                        <span>Missions</span>
+                    </a>
+                    <a class="nav-link" th:href="@{/intelligence}" 
+                       th:classappend="${#request.requestURI.startsWith('/intelligence') ? 'active' : ''}">
+                        <i class="bi bi-eye-fill"></i>
+                        <span>Intelligence</span>
+                    </a>
+                    <a class="nav-link" th:href="@{/communications}" 
+                       th:classappend="${#request.requestURI.startsWith('/communications') ? 'active' : ''}">
+                        <i class="bi bi-broadcast"></i>
+                        <span>Communications</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" th:if="${breadcrumbs}">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" th:each="crumb, iterStat : ${breadcrumbs}"
+                            th:class="${iterStat.last} ? 'breadcrumb-item active' : 'breadcrumb-item'">
+                            <a th:if="${!iterStat.last}" th:href="${crumb.url}" th:text="${crumb.title}"></a>
+                            <span th:if="${iterStat.last}" th:text="${crumb.title}"></span>
+                        </li>
+                    </ol>
+                </nav>
+
+                <!-- Flash Messages -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                
+                <div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle"></i>
+                    <span th:text="${info}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Page Content -->
+                <main th:fragment="content">
+                    <!-- Page content will be inserted here -->
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner-tactical"></div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SockJS and STOMP for WebSocket -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    
+    <!-- Common JavaScript -->
+    <script>
+        // Mission Clock
+        function updateMissionTime() {
+            const now = new Date();
+            const timeString = now.toISOString().slice(11, 19);
+            const element = document.getElementById('mission-time');
+            if (element) {
+                element.textContent = timeString;
+            }
+        }
+
+        // Update clock every second
+        setInterval(updateMissionTime, 1000);
+        updateMissionTime(); // Initial call
+
+        // WebSocket Connection
+        let stompClient = null;
+
+        function connectWebSocket() {
+            const socket = new SockJS('/ws/messaging');
+            stompClient = Stomp.over(socket);
+            
+            stompClient.connect({}, function(frame) {
+                console.log('Connected to WebSocket: ' + frame);
+                
+                // Subscribe to dashboard updates
+                stompClient.subscribe('/topic/dashboard/updates', function(message) {
+                    const data = JSON.parse(message.body);
+                    updateDashboardMetrics(data);
+                });
+                
+                // Subscribe to unit status updates
+                stompClient.subscribe('/topic/units/status', function(message) {
+                    const unitUpdate = JSON.parse(message.body);
+                    updateUnitStatus(unitUpdate);
+                });
+                
+                // Subscribe to mission updates
+                stompClient.subscribe('/topic/missions/updates', function(message) {
+                    const missionUpdate = JSON.parse(message.body);
+                    updateMissionStatus(missionUpdate);
+                });
+            });
+        }
+
+        function updateDashboardMetrics(data) {
+            // Update dashboard metrics if on dashboard page
+            if (window.location.pathname.includes('/dashboard')) {
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = data[key];
+                    }
+                });
+            }
+        }
+
+        function updateUnitStatus(unitUpdate) {
+            // Update unit status indicators
+            const statusElement = document.getElementById('unit-status-' + unitUpdate.id);
+            if (statusElement) {
+                statusElement.className = 'status-indicator status-' + unitUpdate.status.toLowerCase();
+            }
+        }
+
+        function updateMissionStatus(missionUpdate) {
+            // Update mission status indicators
+            const statusElement = document.getElementById('mission-status-' + missionUpdate.id);
+            if (statusElement) {
+                statusElement.textContent = missionUpdate.status;
+            }
+        }
+
+        // Loading overlay functions
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Form submission loading
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    showLoading();
+                });
+            });
+
+            // Connect WebSocket
+            connectWebSocket();
+
+            // Hide loading on page load
+            hideLoading();
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+    
+    <!-- Page-specific JavaScript -->
+    <th:block th:fragment="scripts">
+        <!-- Page-specific scripts will be inserted here -->
+    </th:block>
+</body>
+</html>

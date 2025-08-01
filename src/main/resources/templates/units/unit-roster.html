@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Unit Management</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Unit Management Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-success">
+                <i class="bi bi-people-fill"></i>
+                Unit Management
+            </h1>
+            <div class="d-flex gap-2">
+                <a href="/units/new" class="btn btn-tactical">
+                    <i class="bi bi-plus-circle"></i> Add Unit
+                </a>
+                <a href="/units/map" class="btn btn-outline-success">
+                    <i class="bi bi-geo-alt"></i> Position Map
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-funnel"></i>
+                    Filter Units
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="get" th:action="@{/units}">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   th:value="${searchFilter}" placeholder="Callsign or unit name...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Statuses</option>
+                                <option th:each="status : ${allStatuses}" 
+                                        th:value="${status}" 
+                                        th:text="${status.name()}"
+                                        th:selected="${status == statusFilter}">Status</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="domain" class="form-label">Domain</label>
+                            <select class="form-select" id="domain" name="domain">
+                                <option value="">All Domains</option>
+                                <option th:each="domain : ${allDomains}" 
+                                        th:value="${domain}" 
+                                        th:text="${domain.name()}"
+                                        th:selected="${domain == domainFilter}">Domain</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-tactical me-2">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                            <a href="/units" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Units Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-table"></i>
+                    Unit Roster
+                </h5>
+                <span class="badge bg-success" th:text="${totalElements + ' units'}">0 units</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-tactical table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a th:href="@{/units(sort='callsign', page=${currentPage}, size=20)}" 
+                                       class="text-decoration-none text-success">
+                                        Callsign <i class="bi bi-arrow-up-down"></i>
+                                    </a>
+                                </th>
+                                <th>Unit Name</th>
+                                <th>Type</th>
+                                <th>Domain</th>
+                                <th>Status</th>
+                                <th>Personnel</th>
+                                <th>Position</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="unit : ${filteredUnits ?: units.content}" 
+                                th:if="${filteredUnits != null ? !filteredUnits.isEmpty() : !units.content.isEmpty()}">
+                                <td>
+                                    <strong th:text="${unit.callsign}">ALPHA-1</strong>
+                                </td>
+                                <td th:text="${unit.unitName}">1st Infantry Battalion</td>
+                                <td>
+                                    <span class="badge bg-secondary" th:text="${unit.unitType?.name()}">INFANTRY</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info" th:text="${unit.domain?.name()}">LAND</span>
+                                </td>
+                                <td>
+                                    <span class="d-flex align-items-center">
+                                        <span class="status-indicator me-2" 
+                                              th:class="'status-indicator status-' + ${unit.status.name().toLowerCase()}"></span>
+                                        <span th:text="${unit.status.name()}">ACTIVE</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:text="${unit.personnelCount ?: 'N/A'}">120</span>
+                                </td>
+                                <td>
+                                    <small th:if="${unit.latitude != null and unit.longitude != null}"
+                                           th:text="${#numbers.formatDecimal(unit.latitude, 1, 4)} + ', ' + ${#numbers.formatDecimal(unit.longitude, 1, 4)}">
+                                        34.0522, -118.2437
+                                    </small>
+                                    <small th:unless="${unit.latitude != null and unit.longitude != null}" class="text-muted">
+                                        Unknown
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/units/{id}(id=${unit.id})}" 
+                                           class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/units/{id}/edit(id=${unit.id})}" 
+                                           class="btn btn-outline-warning" title="Edit Unit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                title="Delete Unit"
+                                                th:onclick="'confirmDelete(' + ${unit.id} + ', \'' + ${unit.callsign} + '\')'">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Empty state -->
+                            <tr th:if="${filteredUnits != null ? filteredUnits.isEmpty() : units.content.isEmpty()}">
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="bi bi-info-circle"></i>
+                                    No units found matching the current filters.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Unit pagination" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center mt-3">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/units(page=${currentPage - 1}, size=20, status=${statusFilter}, domain=${domainFilter}, search=${searchFilter})}">
+                        Previous
+                    </a>
+                </li>
+                
+                <li class="page-item" 
+                    th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:if="${page >= currentPage - 2 and page <= currentPage + 2}"
+                    th:classappend="${page == currentPage} ? 'active'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/units(page=${page}, size=20, status=${statusFilter}, domain=${domainFilter}, search=${searchFilter})}"
+                       th:text="${page + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link bg-dark border-success text-success" 
+                       th:href="@{/units(page=${currentPage + 1}, size=20, status=${statusFilter}, domain=${domainFilter}, search=${searchFilter})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark border-danger">
+                    <div class="modal-header border-danger">
+                        <h5 class="modal-title text-danger" id="deleteModalLabel">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Confirm Deletion
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete unit <strong id="deleteUnitCallsign"></strong>?</p>
+                        <p class="text-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            This action cannot be undone.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-danger">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form id="deleteForm" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger-tactical">
+                                <i class="bi bi-trash"></i> Delete Unit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Unit Management Scripts -->
+    <th:block th:fragment="scripts">
+        <script>
+            function confirmDelete(unitId, callsign) {
+                document.getElementById('deleteUnitCallsign').textContent = callsign;
+                document.getElementById('deleteForm').action = '/units/' + unitId + '/delete';
+                
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+            }
+
+            // Auto-submit form on filter change
+            document.addEventListener('DOMContentLoaded', function() {
+                const filterForm = document.querySelector('form[method="get"]');
+                const selectElements = filterForm.querySelectorAll('select');
+                
+                selectElements.forEach(select => {
+                    select.addEventListener('change', function() {
+                        filterForm.submit();
+                    });
+                });
+
+                // Enable search on Enter key
+                const searchInput = document.getElementById('search');
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        filterForm.submit();
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

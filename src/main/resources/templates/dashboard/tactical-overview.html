@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Tactical Dashboard</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <!-- Dashboard Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-success">
+                <i class="bi bi-speedometer2"></i>
+                Tactical Dashboard
+            </h1>
+            <div class="d-flex gap-2">
+                <a href="/dashboard/map" class="btn btn-tactical">
+                    <i class="bi bi-geo-alt"></i> Tactical Map
+                </a>
+                <button class="btn btn-outline-success" onclick="refreshDashboard()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Key Metrics Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title text-success">Total Units</h5>
+                                <h2 class="text-success" id="totalUnits" th:text="${totalUnits}">0</h2>
+                            </div>
+                            <i class="bi bi-people-fill text-success fs-1 opacity-50"></i>
+                        </div>
+                        <small class="text-muted">Active Military Units</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title text-primary">Active Missions</h5>
+                                <h2 class="text-primary" id="activeMissions" th:text="${activeMissions}">0</h2>
+                            </div>
+                            <i class="bi bi-bullseye text-primary fs-1 opacity-50"></i>
+                        </div>
+                        <small class="text-muted">Ongoing Operations</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title text-warning">Ready Units</h5>
+                                <h2 class="text-warning" id="readyUnits" th:text="${unitStatusCounts['ACTIVE'] ?: 0}">0</h2>
+                            </div>
+                            <i class="bi bi-shield-check text-warning fs-1 opacity-50"></i>
+                        </div>
+                        <small class="text-muted">Mission Ready</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title text-danger">Alerts</h5>
+                                <h2 class="text-danger" id="alertCount">3</h2>
+                            </div>
+                            <i class="bi bi-exclamation-triangle text-danger fs-1 opacity-50"></i>
+                        </div>
+                        <small class="text-muted">Active Alerts</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Status Row -->
+        <div class="row mb-4">
+            <!-- Unit Status Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pie-chart"></i>
+                            Unit Status Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="unitStatusChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mission Status Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bar-chart"></i>
+                            Mission Status Overview
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="missionStatusChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Status Grid and Recent Activity -->
+        <div class="row">
+            <!-- Live Unit Status -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-broadcast"></i>
+                            Live Unit Status
+                        </h5>
+                        <span class="badge bg-success">Real-time</span>
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <div id="unit-status-grid" th:fragment="unit-status-grid">
+                            <div class="row g-2" th:if="${units}">
+                                <div class="col-md-6 col-lg-4" th:each="unit : ${units}">
+                                    <div class="card bg-secondary">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="card-title mb-1" th:text="${unit.callsign}">Unit Callsign</h6>
+                                                    <small class="text-muted" th:text="${unit.unitName}">Unit Name</small>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="status-indicator" 
+                                                          th:id="'unit-status-' + ${unit.id}"
+                                                          th:class="'status-indicator status-' + ${unit.status.name().toLowerCase()}"></span>
+                                                    <br>
+                                                    <small class="text-muted" th:text="${unit.status.name()}">Status</small>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-geo-alt"></i>
+                                                    <span th:if="${unit.latitude != null and unit.longitude != null}"
+                                                          th:text="${#numbers.formatDecimal(unit.latitude, 1, 4)} + ', ' + ${#numbers.formatDecimal(unit.longitude, 1, 4)}">
+                                                        Position
+                                                    </span>
+                                                    <span th:unless="${unit.latitude != null and unit.longitude != null}">
+                                                        Position Unknown
+                                                    </span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center text-muted py-4" th:unless="${units}">
+                                <i class="bi bi-info-circle"></i>
+                                No units available
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history"></i>
+                            Recent Activity
+                        </h5>
+                    </div>
+                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="activity-feed">
+                            <div class="activity-item mb-3" th:each="unit : ${recentUpdates}">
+                                <div class="d-flex align-items-start">
+                                    <div class="activity-icon me-2">
+                                        <i class="bi bi-arrow-up-circle text-success" th:if="${unit.status.name() == 'ACTIVE'}"></i>
+                                        <i class="bi bi-arrow-down-circle text-warning" th:if="${unit.status.name() == 'INACTIVE'}"></i>
+                                        <i class="bi bi-gear text-warning" th:if="${unit.status.name() == 'MAINTENANCE'}"></i>
+                                        <i class="bi bi-send text-primary" th:if="${unit.status.name() == 'DEPLOYED'}"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title" th:text="${unit.callsign}">Unit Callsign</div>
+                                        <div class="activity-description text-muted small">
+                                            Status: <span th:text="${unit.status.name()}">Status</span>
+                                        </div>
+                                        <div class="activity-time text-muted small">
+                                            <i class="bi bi-clock"></i>
+                                            <span th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'HH:mm:ss')}">Recent</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center text-muted py-3" th:unless="${recentUpdates}">
+                                <i class="bi bi-info-circle"></i>
+                                No recent activity
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Dashboard-specific Scripts -->
+    <th:block th:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+        <script th:inline="javascript">
+            // Data from Thymeleaf
+            const unitStatusData = /*[[${unitStatusCounts}]]*/ {};
+            const missionStatusData = /*[[${missionStatusCounts}]]*/ {};
+
+            // Unit Status Doughnut Chart
+            const unitCtx = document.getElementById('unitStatusChart').getContext('2d');
+            const unitChart = new Chart(unitCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(unitStatusData),
+                    datasets: [{
+                        data: Object.values(unitStatusData),
+                        backgroundColor: [
+                            'var(--tactical-green)',
+                            'var(--tactical-amber)',
+                            'var(--tactical-red)',
+                            'var(--tactical-blue)',
+                            'var(--tactical-light-gray)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: 'var(--tactical-dark)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Mission Status Bar Chart
+            const missionCtx = document.getElementById('missionStatusChart').getContext('2d');
+            const missionChart = new Chart(missionCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(missionStatusData),
+                    datasets: [{
+                        label: 'Missions',
+                        data: Object.values(missionStatusData),
+                        backgroundColor: 'var(--tactical-green)',
+                        borderColor: 'var(--tactical-green-dim)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#ffffff',
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Refresh Dashboard Function
+            function refreshDashboard() {
+                showLoading();
+                
+                fetch('/dashboard/api/realtime-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update metrics
+                        updateDashboardMetrics(data);
+                        
+                        // Refresh unit status grid
+                        fetch('/dashboard/fragments/unit-status')
+                            .then(response => response.text())
+                            .then(html => {
+                                document.getElementById('unit-status-grid').innerHTML = html;
+                            });
+                        
+                        hideLoading();
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing dashboard:', error);
+                        hideLoading();
+                    });
+            }
+
+            // Auto-refresh every 30 seconds
+            setInterval(refreshDashboard, 30000);
+
+            // Initialize dashboard
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Tactical Dashboard initialized');
+            });
+        </script>
+    </th:block>
+</body>
+</html>
