@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-military-900 text-gray-100 font-mono;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-military-800;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-military-600 rounded-md;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-military-500;
+  }
+}
+
+@layer components {
+  .tactical-card {
+    @apply bg-military-800 border border-military-700 rounded-lg shadow-lg;
+  }
+  
+  .tactical-button {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-military-900;
+  }
+  
+  .tactical-button-primary {
+    @apply tactical-button bg-primary-600 text-white hover:bg-primary-500 focus:ring-primary-500;
+  }
+  
+  .tactical-button-secondary {
+    @apply tactical-button bg-military-700 text-gray-300 hover:bg-military-600 border border-military-600 focus:ring-military-500;
+  }
+  
+  .tactical-button-danger {
+    @apply tactical-button bg-tactical-red text-white hover:bg-red-600 focus:ring-red-500;
+  }
+  
+  .tactical-input {
+    @apply bg-military-800 border border-military-600 text-gray-100 placeholder-gray-400 rounded-md focus:ring-primary-500 focus:border-primary-500;
+  }
+  
+  .status-indicator {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-operational {
+    @apply status-indicator bg-green-100 text-green-800;
+  }
+  
+  .status-maintenance {
+    @apply status-indicator bg-yellow-100 text-yellow-800;
+  }
+  
+  .status-offline {
+    @apply status-indicator bg-red-100 text-red-800;
+  }
+  
+  .glow-effect {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  .tactical-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+}
