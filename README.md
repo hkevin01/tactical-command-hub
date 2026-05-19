@@ -110,13 +110,13 @@ mvn spring-boot:run
 
 The system uses JWT-based authentication with the following default users:
 
-| Username | Password | Role | Description |
+| <sub>Username</sub> | <sub>Password</sub> | <sub>Role</sub> | <sub>Description</sub> |
 |----------|----------|------|-------------|
-| `admin` | `admin123` | COMMANDER | Full system access |
-| `commander1` | `admin123` | COMMANDER | Mission command authority |
-| `operator1` | `admin123` | OPERATOR | Operational access |
-| `analyst1` | `admin123` | ANALYST | Intelligence analysis |
-| `viewer1` | `admin123` | VIEWER | Read-only access |
+| <sub>`admin`</sub> | <sub>`admin123`</sub> | <sub>COMMANDER</sub> | <sub>Full system access</sub> |
+| <sub>`commander1`</sub> | <sub>`admin123`</sub> | <sub>COMMANDER</sub> | <sub>Mission command authority</sub> |
+| <sub>`operator1`</sub> | <sub>`admin123`</sub> | <sub>OPERATOR</sub> | <sub>Operational access</sub> |
+| <sub>`analyst1`</sub> | <sub>`admin123`</sub> | <sub>ANALYST</sub> | <sub>Intelligence analysis</sub> |
+| <sub>`viewer1`</sub> | <sub>`admin123`</sub> | <sub>VIEWER</sub> | <sub>Read-only access</sub> |
 
 ### Login Example
 
